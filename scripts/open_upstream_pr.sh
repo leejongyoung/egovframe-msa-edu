@@ -23,6 +23,8 @@ fi
 upstream_repo='eGovFramework/egovframe-msa-edu'
 branch="upstream-submit/$(date +%Y%m%d%H%M%S)"
 denylist=(
+  .specify
+  .omp
   AGENTS.md
   .github/workflows/fork-ci.yml
   .github/workflows/sync-upstream-main.yml
