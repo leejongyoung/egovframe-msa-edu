@@ -1,6 +1,8 @@
 package org.egovframe.cloud.userservice.api.user;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.egovframe.cloud.userservice.support.TestTokens;
 import org.egovframe.cloud.common.domain.Role;
 import org.egovframe.cloud.userservice.api.user.dto.UserResponseDto;
 import org.egovframe.cloud.userservice.api.user.dto.UserSaveRequestDto;
@@ -8,6 +10,7 @@ import org.egovframe.cloud.userservice.api.user.dto.UserUpdateRequestDto;
 import org.egovframe.cloud.userservice.domain.user.User;
 import org.egovframe.cloud.userservice.domain.user.UserRepository;
 import org.egovframe.cloud.userservice.domain.user.UserStateCode;
+import org.egovframe.cloud.userservice.domain.user.UserFindPasswordRepository;
 import org.egovframe.cloud.userservice.service.user.UserService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
@@ -15,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +36,23 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.mail.MailSendException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import jakarta.mail.Message;
+import jakarta.mail.internet.MimeMessage;
+import org.mockito.ArgumentCaptor;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,6 +68,13 @@ class UserApiControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    // SMTP is the sole replacement: controller, service, token persistence and authorization remain real.
+    @MockitoBean
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private UserFindPasswordRepository userFindPasswordRepository;
 
     //    private static final String USER_SERVICE_URL = "http://localhost:8000/user-service";
     private static final String TEST_COM = "@test.com";
@@ -150,20 +173,26 @@ class UserApiControllerTest {
     }
 
     @Test
-    public void 사용자_등록오류() {
-        // given
+    public void 사용자_등록오류() throws Exception {
+        // given: 검증을 통과하지 못하는 요청 본문 (이메일 형식, 비밀번호 규칙, 필수값 누락)
         UserSaveRequestDto userSaveRequestDto = UserSaveRequestDto.builder()
                 .userName("사용자")
                 .email("email")
                 .password("test")
                 .build();
 
-        String url = "/api/v1/users";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, TestTokens.bearer("admin-1", TestTokens.ADMIN));
 
-        RestClientException restClientException = Assertions.assertThrows(RestClientException.class, () -> {
-            restTemplate.postForEntity(url, userSaveRequestDto, Long.class);
-        });
-        System.out.println("restClientException.getMessage() = " + restClientException.getMessage());
+        // when
+        ResponseEntity<String> response = restTemplate.exchange("/api/v1/users", HttpMethod.POST,
+                new HttpEntity<>(userSaveRequestDto, headers), String.class);
+
+        // then: ExceptionHandlerAdvice 의 검증 오류 응답
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        JsonNode body = objectMapper.readTree(response.getBody());
+        assertThat(body.get("status").asInt()).isEqualTo(400);
+        assertThat(body.get("errors").isEmpty()).isFalse();
     }
 
     @Test
@@ -341,9 +370,11 @@ class UserApiControllerTest {
     void 사용자_비밀번호_찾기_테스트() throws Exception {
         // given
         Map<String, Object> userData = new HashMap<>();
-        userData.put("email", "give928@gmail.com");
+        userData.put("email", "password-failure@example.test");
 
         User user = insertUser(userData);
+        when(javaMailSender.createMimeMessage()).thenAnswer(invocation -> new JavaMailSenderImpl().createMimeMessage());
+        doThrow(new MailSendException("Test SMTP delivery failure")).when(javaMailSender).send(any(MimeMessage.class));
 
         Map<String, Object> params = new HashMap<>();
         params.put("userName", user.getUserName());
@@ -360,9 +391,50 @@ class UserApiControllerTest {
         // then
         resultActions
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest()); // 계정 설정 안되어 있으므로 연결하지 못함.
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()); // SMTP boundary reports a deterministic delivery failure.
+        verify(javaMailSender).send(any(MimeMessage.class));
 
         deleteUser(user.getId());
+    }
+
+    @Test
+    void 사용자_비밀번호_찾기는_메일_내용과_DB_토큰을_생성한다() throws Exception {
+        User user = insertUser(Map.of("email", "password-success@example.test"));
+        when(javaMailSender.createMimeMessage()).thenAnswer(invocation -> new JavaMailSenderImpl().createMimeMessage());
+
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("userName", user.getUserName());
+            params.put("emailAddr", user.getEmail());
+            params.put("mainUrl", "http://localhost:4000");
+            params.put("changePasswordUrl", "http://localhost:4000/user/password/change");
+
+            mvc.perform(MockMvcRequestBuilders.post(URL + "/password/find")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(params)))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().string("true"));
+
+            ArgumentCaptor<MimeMessage> sent = ArgumentCaptor.forClass(MimeMessage.class);
+            verify(javaMailSender).send(sent.capture());
+            MimeMessage message = sent.getValue();
+            assertThat(message.getRecipients(Message.RecipientType.TO)[0].toString()).isEqualTo(user.getEmail());
+            String html = (String) message.getContent();
+            java.util.regex.Matcher token = java.util.regex.Pattern.compile("\\?token=([a-f0-9]{32})").matcher(html);
+            assertThat(token.find()).as("Password-reset mail contains a generated token URL").isTrue();
+            String tokenValue = token.group(1);
+            var persisted = userFindPasswordRepository.findByTokenValue(tokenValue).orElseThrow();
+            try {
+                assertThat(html).contains(user.getUserName(), "http://localhost:4000/user/password/change?token=" + tokenValue);
+                mvc.perform(MockMvcRequestBuilders.get(URL + "/password/valid/" + tokenValue))
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(MockMvcResultMatchers.content().string("true"));
+            } finally {
+                userFindPasswordRepository.delete(persisted);
+            }
+        } finally {
+            deleteUser(user.getId());
+        }
     }
 
     /**

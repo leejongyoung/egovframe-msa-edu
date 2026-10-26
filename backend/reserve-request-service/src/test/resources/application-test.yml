@@ -1,6 +1,25 @@
 spring:
   application:
     name: reserve-check-service
+  # 스키마는 테스트 전용 R2dbcConfig 가 schema-h2.sql 로 만든다. main schema.sql 은 MySQL 문법이라 H2 에서 실행하지 않는다.
+  sql:
+    init:
+      mode: never
+  # 외부 경계(RabbitMQ bus/stream 바인더)는 테스트에서 연결하지 않는다.
+  cloud:
+    bus:
+      enabled: false
+    stream:
+      function:
+        autodetect: false
+    function:
+      definition: ""
+    discovery:
+      enabled: false
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
 
   h2:
     console:
@@ -26,5 +45,6 @@ ftp:
 # eureka 가 포함되면 eureka server 도 등록되므로 해제한다.
 eureka:
   client:
+    enabled: false
     register-with-eureka: false
     fetch-registry: false

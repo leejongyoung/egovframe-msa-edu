@@ -1,22 +1,32 @@
 spring:
   application:
     name: user-service
+  cloud:
+    bus:
+      enabled: false
+    function:
+      autodetect: false
+    stream:
+      enabled: false
 
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    # 컨텍스트마다 독립된 DB 를 쓰도록 임의 이름을 사용한다. H2 2.x 예약어인 user, authorization 은 NON_KEYWORDS 로 식별자 허용한다.
+    url: jdbc:h2:mem:user-${random.uuid};MODE=MYSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;NON_KEYWORDS=USER,AUTHORIZATION
     username: sa
     password: 
     driver-class-name: org.h2.Driver
-    initialization-mode: always
-#    schema: classpath:h2/schema.sql
-    data: classpath:h2/data.sql
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:h2/data.sql
   jpa:
+    defer-datasource-initialization: true # Hibernate 가 테이블을 만든 뒤 data.sql 실행
     hibernate:
       generate-ddl: true
       ddl-auto: create-drop
-      dialect: org.hibernate.dialect.MySQL5Dialect
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.H2Dialect # 운영 application.yml 의 MySQLDialect 는 H2 에서 boolean case 식 등이 실패한다
         format_sql: true
         default_batch_fetch_size: 1000
     show-sql: true
@@ -27,18 +37,10 @@ spring:
   cache:
     jcache:
       config: classpath:ehcache.xml
-  mail: # 비밀번호 변경 이메일 발송
-    host: smtp.gmail.com # smtp host
-    port: 587 # smtp port
-    username: email_username # 계정
-    password: 'email_password' # 비밀번호 - 구글 보안 2단계 인증 해제, 보안 수준이 낮은 앱의 액세스 허용(https://myaccount.google.com/lesssecureapps)
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
+  # Controller tests replace JavaMailSender at the SMTP boundary; no real mail credentials or hosts.
+  mail:
+    host: localhost
+    port: 2525
   security:
     # oauth2 를 사용하려면 아래 google, naver, kakao 의 client-id, client-secret 을 발급받아야 한다.
     oauth2:
@@ -88,7 +90,9 @@ spring:
 file:
   directory: ${user.home}/msa-attach-volume
 messages:
-  directory: ${file.directory}/messages
+  # 외부 공유 볼륨(portal-service 생성) 대신 저장소에 포함된 테스트 전용 메시지 디렉터리를 사용한다.
+  # 운영과 동일하게 file:// 기반 default 프로파일 경로로 로드된다(Gradle test 의 user.dir = 모듈 루트).
+  directory: ${user.dir}/src/test/resources/test-messages
 
 # jwt token
 token:
@@ -102,6 +106,16 @@ ftp:
 
 # eureka 가 포함되면 eureka server 도 등록되므로 해제한다.
 eureka:
+  enabled: false
   client:
     register-with-eureka: false
     fetch-registry: false
+
+management:
+  health:
+    mail:
+      enabled: false # SMTP is mocked; actuator must not try to connect either.
+    rabbit:
+      enabled: false
+  tracing:
+    enabled: false

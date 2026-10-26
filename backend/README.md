@@ -20,19 +20,36 @@
 각 서비스별 README를 참고하거나, 루트 README를 참고하세요.
 
 
-## board-service 테스트 DB와 남은 실패
+## 독립적인 백엔드 테스트 환경
 
-board 테스트 프로파일은 컨텍스트마다 별도 H2 인메모리 DB를 사용하며,
-MySQL의 `user` 테이블을 따옴표 없이 조회할 수 있도록 H2의 `USER` 예약어 처리를 해제합니다.
-`backend/board-service`에서 `./gradlew test --tests '*TestDatabaseSchemaTest'`로
-실제 JDBC 조회를 검증할 수 있습니다.
+각 서비스 디렉터리에서 `./gradlew --no-daemon build`로 테스트를 포함해 빌드합니다.
+테스트 프로파일은 Config Server·Eureka·Cloud Bus 같은 외부 인프라를 사용하지 않습니다.
+JPA 서비스는 컨텍스트별 H2 인메모리 DB와 H2 방언을 사용하고,
+`user`·`authorization`처럼 MySQL에서 사용하는 이름은 H2의 `NON_KEYWORDS`로 처리합니다.
+user-service의 시드는 `spring.sql.init`과 `defer-datasource-initialization`으로
+Hibernate 스키마 생성 뒤 실행됩니다. 예약 서비스는 별도 H2 R2DBC DB와 `schema-h2.sql`을 사용합니다.
+외부 공유 볼륨의 메시지는 테스트 리소스 fixture로 대체하고 파일 업로드는 임시 경로를 사용합니다.
 
-JDK 21/Gradle 8.5에서 전체 `./gradlew test --no-daemon`은 37건 중 27건이 여전히 실패합니다.
-최신 fork `work`의 Gradle 8.14.6/로깅 회귀 변경을 병합한 뒤에는 41건 중 27건이 실패하며,
-추가된 4건은 base의 로깅 회귀입니다. 신규 JDBC 회귀 1건은 통과합니다.
-HTML 응답 변환 실패 25건과 상태 단언 실패 2건은 별도 인증/환경 범위로 남겨 두었습니다.
-초기 빈 DB에서 Hibernate가 없는 FK를 삭제하려는 경고도 남아 있습니다.
-이 테스트 DB 수정은 CI의 `-x test` 정책이나 운영 인증/DB 설정을 변경하지 않습니다.
+board·portal HTTP 테스트는 운영 `SecurityConfig`와 JWT 필터를 그대로 실행합니다.
+유효한 테스트 JWT를 보내며, 서비스 간 인가 호출만 random-port HTTP user-service 스텁으로 연결합니다.
+스텁은 권한·HTTP 메서드·요청 경로별로 허용 여부를 판단하므로 무조건 허용하지 않습니다.
+user-service 보안 테스트는 실제 JWT와 H2의 권한/인가 시드로 판정합니다.
+다음 테스트는 실제 random-port 서버에서 허가된 요청의 JSON 성공 응답과
+인증 없음·권한 부족 요청의 거부를 함께 확인합니다.
+
+```sh
+# 해당 서비스 디렉터리에서 실행
+./gradlew --no-daemon test --tests '*BoardAuthorizationHttpTest'
+./gradlew --no-daemon test --tests '*PortalAuthorizationHttpTest'
+./gradlew --no-daemon test --tests '*UserServiceSecurityHttpTest'
+```
+
+별도 JVM의 board 실행 JAR도 테스트 H2·로컬 인가 HTTP 경계로 기동하여 JUnit 외부의 `curl`로 확인했습니다.
+`GET /api/v1/boards?page=0&size=10`은 무인증·`ROLE_GUEST` JWT에서 403,
+`ROLE_ADMIN` JWT에서 200/JSON 페이지를 반환했고, 확인 뒤 애플리케이션과 인가 스텁을 종료했습니다.
+
+이 테스트는 운영 보안을 완화하지 않으며, 실제 MySQL·RabbitMQ·Config Server·Eureka를 함께
+기동한 전체 서비스 종단간 테스트를 의미하지 않습니다. 운영 인가 데이터와 외부 시스템 연동은 별도로 검증해야 합니다.
 
 ## 테스트 프로파일 로깅
 
@@ -59,12 +76,26 @@ Gradle 9.8.1은 현재 빌드 스크립트의 `sourceCompatibility` 및 공통 �
 ./gradlew --no-daemon build
 ```
 
-CI는 `config`, `discovery`, `egovframe-cloud-module-common`에서 테스트를 포함하고,
-나머지 7개 서비스는 기존대로 `./gradlew --no-daemon build -x test`를 실행합니다.
-따라서 CI 빌드 성공은 7개 서비스의 전체 테스트 성공을 의미하지 않습니다.
 Java 소스/타깃은 17이며, 공통 모듈은 JDK 17 toolchain이 필요합니다.
-로컬에서는 JDK 21로 Gradle을 실행하고 공통 모듈에 JDK 17 컴파일러를 제공하여
-위 CI 빌드 명령을 10개 모듈 모두 검증했습니다. CI의 실행 JDK는 17입니다.
+2026-10-27 로컬 최종 검증은 9개 서비스의 Gradle을 JDK 21로 실행하고,
+공통 모듈은 JDK 17로 실행하여 각 디렉터리에서 `./gradlew --no-daemon cleanTest build`를 수행했습니다.
+10개 모듈 모두 테스트를 생략하지 않고 통과했습니다(514건, 실패·오류·건너뜀 0).
+
+| 모듈 | 실행 테스트 |
+| --- | ---: |
+| apigateway | 22 |
+| board-service | 45 |
+| portal-service | 145 |
+| reserve-check-service | 70 |
+| reserve-item-service | 52 |
+| reserve-request-service | 73 |
+| user-service | 82 |
+| config | 6 |
+| discovery | 5 |
+| egovframe-cloud-module-common | 14 |
+
+CI의 실행 명령과 JDK 설정은 `.github/workflows/fork-ci.yml`을 기준으로 확인합니다.
+`-x test`가 있는 빌드는 전체 테스트 성공의 근거가 될 수 없습니다.
 
 ## 예약 서비스 오류 응답
 

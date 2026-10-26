@@ -1,0 +1,5 @@
+# Bootstrap runs before application-test.yml: never contact Config Server in tests.
+spring:
+  cloud:
+    config:
+      enabled: false

@@ -1,6 +1,7 @@
 package org.egovframe.cloud.reserverequestservice.api;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,12 @@ import reactor.core.publisher.Mono;
 })
 class ReactiveErrorResponseTest {
 
+    // ClientInput 검증(필수 4개 필드)을 통과해야 서비스까지 도달해 서비스 예외가 advice 로 변환되는지 검증할 수 있다.
+    private static final String VALID_CLIENT_BODY = """
+            {"reserveItemId":101,"reservePurposeContent":"meeting",
+             "userContactNo":"010-0000-0000","userEmail":"owner@example.com"}
+            """;
+
     @Autowired
     private WebTestClient client;
 
@@ -53,7 +60,7 @@ class ReactiveErrorResponseTest {
                 .thenReturn(Mono.error(new EntityNotFoundException("missing-synthetic")));
 
         client.post().uri("/api/v1/requests/evaluates").contentType(MediaType.APPLICATION_JSON)
-                .bodyValue("{}").exchange()
+                .bodyValue(VALID_CLIENT_BODY).exchange()
                 .expectStatus().isBadRequest().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath("$.status").isEqualTo(400).jsonPath("$.code").isEqualTo("E003")
                 .jsonPath("$.timestamp").exists().jsonPath("$.errors").isEmpty();
@@ -65,10 +72,19 @@ class ReactiveErrorResponseTest {
                 .thenReturn(Mono.error(new IllegalStateException("synthetic failure")));
 
         client.post().uri("/api/v1/requests/evaluates").contentType(MediaType.APPLICATION_JSON)
-                .bodyValue("{}").exchange()
+                .bodyValue(VALID_CLIENT_BODY).exchange()
                 .expectStatus().is5xxServerError().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath("$.status").isEqualTo(500).jsonPath("$.code").isEqualTo("E999")
                 .jsonPath("$.errors").isEmpty();
+    }
+
+    @Test
+    void requestWithoutTokenIsRejectedBySecurityBeforeReachingService() {
+        client.mutate().defaultHeaders(h -> h.remove("Authorization")).build()
+                .post().uri("/api/v1/requests/evaluates").contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(VALID_CLIENT_BODY).exchange()
+                .expectStatus().isUnauthorized();
+        verifyNoInteractions(reserveService);
     }
 
     @Test
