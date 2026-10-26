@@ -19,7 +19,6 @@ import org.egovframe.cloud.userservice.domain.role.RoleRepository;
 import org.json.JSONArray;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -296,7 +295,6 @@ class RoleAuthorizationApiControllerTest {
      * 권한 인가 레파지토리 등록/조회 테스트
      */
     @Test
-    @Disabled
     void 권한_인가_등록_조회() {
         // given
         final Integer authorizationNo = authorizations.get(0).getAuthorizationNo();

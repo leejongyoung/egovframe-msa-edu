@@ -24,10 +24,6 @@ jobs:
           - reserve-item-service
           - reserve-request-service
           - user-service
-        include:
-          - { service: config, gradle: build }
-          - { service: discovery, gradle: build }
-          - { service: egovframe-cloud-module-common, gradle: build }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -36,7 +32,7 @@ jobs:
           java-version: '17'
           cache: gradle
       - name: Build service
-        run: cd backend/${{ matrix.service }} && ./gradlew --no-daemon ${{ matrix.gradle || 'build -x test' }}
+        run: cd backend/${{ matrix.service }} && ./gradlew --no-daemon build
   frontend:
     if: github.repository == 'leejongyoung/egovframe-msa-edu'
     runs-on: ubuntu-latest

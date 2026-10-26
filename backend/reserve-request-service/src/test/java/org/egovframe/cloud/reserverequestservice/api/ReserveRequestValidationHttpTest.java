@@ -8,12 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.egovframe.cloud.common.util.MessageUtil;
-import org.egovframe.rte.fdl.cmmn.trace.LeaveaTrace;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.egovframe.cloud.reactive.exception.ExceptionHandlerAdvice;
-import org.egovframe.cloud.reserverequestservice.config.MessageListenerContainerFactory;
 import org.egovframe.cloud.reserverequestservice.domain.Reserve;
+import org.egovframe.cloud.reservetest.ReserveRequestHttpSliceApplication;
 import org.egovframe.cloud.reserverequestservice.domain.ReserveRepository;
 import org.egovframe.cloud.reserverequestservice.domain.ReserveValidator;
 import org.egovframe.cloud.reserverequestservice.service.ReserveService;
@@ -24,30 +20,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.support.StaticMessageSource;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.server.WebFilter;
 import reactor.core.publisher.Mono;
 
-@SpringBootTest(classes = ReserveRequestValidationHttpTest.HttpApplication.class,
+@SpringBootTest(classes = ReserveRequestHttpSliceApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {"spring.cloud.bootstrap.enabled=false", "spring.cloud.config.enabled=false"})
 class ReserveRequestValidationHttpTest {
-    private static final String OWNER = "authenticated-owner";
+    private static final String OWNER = ReserveRequestHttpSliceApplication.OWNER;
     private static final String[] FIELDS = {
         "reserveItemId", "reservePurposeContent", "userContactNo", "userEmail"
     };
@@ -130,33 +113,5 @@ class ReserveRequestValidationHttpTest {
         body.put("userEmail", "owner@example.com");
         body.put("categoryId", category);
         return body;
-    }
-
-    @SpringBootConfiguration
-    @ImportAutoConfiguration({ReactiveWebServerFactoryAutoConfiguration.class,
-        WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class, JacksonAutoConfiguration.class, ValidationAutoConfiguration.class})
-    // Direct advice import compensates for unmerged prerequisite PR #316; discovery is tested there.
-    @Import({ReserveApiController.class, ReserveService.class, ExceptionHandlerAdvice.class})
-    static class HttpApplication {
-        @Bean LeaveaTrace leaveaTrace() {
-            return new LeaveaTrace();
-        }
-        @Bean ReserveRepository repository() { return mock(ReserveRepository.class); }
-        @Bean ReserveValidator validator() { return mock(ReserveValidator.class); }
-        @Bean StreamBridge streamBridge() { return mock(StreamBridge.class); }
-        @Bean AmqpAdmin amqpAdmin() { return mock(AmqpAdmin.class); }
-        @Bean ConnectionFactory connectionFactory() {
-            return mock(ConnectionFactory.class);
-        }
-        @Bean MessageListenerContainerFactory containers() { return mock(MessageListenerContainerFactory.class); }
-        @Bean MessageUtil messageUtil() {
-            return new MessageUtil();
-        }
-        @Bean StaticMessageSource messageSource() { return new StaticMessageSource(); }
-        @Bean WebFilter authenticatedIdentity() {
-            return (exchange, chain) -> chain.filter(exchange).contextWrite(
-                ReactiveSecurityContextHolder.withAuthentication(
-                    new UsernamePasswordAuthenticationToken(OWNER, "unused", java.util.List.of())));
-        }
     }
 }

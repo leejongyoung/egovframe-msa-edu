@@ -1,5 +1,4 @@
 spring:
   cloud:
     config:
-      uri: http://localhost:8888
-      name: reserve-request-service
+      enabled: false # 테스트에서는 config-server(localhost:8888)에 연결하지 않는다.
