@@ -2,16 +2,18 @@ import { DetailButtons } from '@components/Buttons'
 import CustomAlert from '@components/CustomAlert'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
 import Editor from '@components/Editor'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import TextField from '@mui/material/TextField'
 import { ContentSavePayload, contentService } from '@service'
 import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { format } from '@utils'
 import { AxiosError } from 'axios'
 import { GetServerSideProps } from 'next'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -152,7 +154,12 @@ const ContentItem = ({ contentNo, initData }: IContentItemsProps) => {
       <FormProvider {...methods}>
         <form>
           <Grid container spacing={1}>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="contentName"
@@ -184,7 +191,12 @@ const ContentItem = ({ contentNo, initData }: IContentItemsProps) => {
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="contentRemark"

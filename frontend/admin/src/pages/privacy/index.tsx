@@ -6,14 +6,11 @@ import usePage from '@hooks/usePage'
 // 내부 컴포넌트 및 custom hook, etc...
 import { convertStringToDateFormat } from '@libs/date'
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 // api
 import { privacyService } from '@service'
 import {
@@ -24,7 +21,8 @@ import {
 import { Page, rownum } from '@utils'
 import { AxiosError } from 'axios'
 import { NextPage } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { TFunction } from 'i18next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo } from 'react'
 // 상태관리 recoil
@@ -65,8 +63,12 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 80,
     sortable: false,
-    valueGetter: (params: GridValueGetterParams) =>
-      rownum(data, params.api.getRowIndex(params.id), 'asc'),
+    valueGetter: (value, row, column, apiRef) =>
+      rownum(
+        data,
+        apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+        'asc',
+      ),
   },
   {
     field: 'privacyTitle',
@@ -83,7 +85,7 @@ const getColumns: ColumnsType = (
     align: 'left',
     width: 150,
     sortable: false,
-    renderCell: function renderCellCreatedAt(params: GridCellParams) {
+    renderCell: function renderCellCreatedAt(params: GridRenderCellParams) {
       return (
         <Switch
           checked={Boolean(params.value)}
@@ -101,8 +103,8 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 200,
     sortable: false,
-    valueFormatter: (params: GridValueFormatterParams) =>
-      convertStringToDateFormat(params.value as string, 'yyyy-MM-dd HH:mm:ss'),
+    valueFormatter: (value, row, column, apiRef) =>
+      convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss'),
   },
   {
     field: 'buttons',
@@ -111,7 +113,7 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 150,
     sortable: false,
-    renderCell: function renderCellButtons(params: GridCellParams) {
+    renderCell: function renderCellButtons(params: GridRenderCellParams) {
       return (
         <GridButtons
           id={params.row.privacyNo as string}
@@ -256,15 +258,17 @@ const Privacy: NextPage<any> = () => {
         conditionKey={conditionKey}
       />
       <CustomDataGrid
-        page={page}
         classes={classes}
         rows={data?.content}
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        onPageChange={handlePageChange}
         getRowId={r => r.privacyNo}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

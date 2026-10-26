@@ -1,17 +1,19 @@
-import Avatar from '@material-ui/core/Avatar'
-import Grid from '@material-ui/core/Grid'
-import IconButton from '@material-ui/core/IconButton'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
-import ListItemText from '@material-ui/core/ListItemText'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import DeleteIcon from '@material-ui/icons/Delete'
-import FolderIcon from '@material-ui/icons/Folder'
+import Avatar from '@mui/material/Avatar'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction'
+import ListItemText from '@mui/material/ListItemText'
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import DeleteIcon from '@mui/icons-material/Delete'
+import FolderIcon from '@mui/icons-material/Folder'
 import { IFile } from '@service'
 import { formatBytes } from '@utils'
-import produce from 'immer'
+import { produce } from 'immer'
 import React, { useContext, useEffect, useState } from 'react'
 import { FileContext } from '.'
 
@@ -80,7 +82,7 @@ const FileList = () => {
   return (
     <div className={classes.root}>
       <Grid container>
-        <Grid item>
+        <Grid>
           <div>
             {fileList && (
               <List className={classes.list}>
@@ -99,7 +101,7 @@ const FileList = () => {
                     <ListItemSecondaryAction
                       onClick={event => handleDelete(event, item.key)}
                     >
-                      <IconButton edge="end" aria-label="delete">
+                      <IconButton edge="end" aria-label="delete" size="large">
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
@@ -111,7 +113,7 @@ const FileList = () => {
         </Grid>
       </Grid>
     </div>
-  )
+  );
 }
 
 export default FileList

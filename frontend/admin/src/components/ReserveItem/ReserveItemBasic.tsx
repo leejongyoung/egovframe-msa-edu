@@ -4,21 +4,23 @@ import {
   ControlledSwitchField,
   ControlledTextField,
 } from '@components/ControlledField'
-import Box from '@material-ui/core/Box'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import CardHeader from '@material-ui/core/CardHeader'
-import Collapse from '@material-ui/core/Collapse'
-import Divider from '@material-ui/core/Divider'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import Grid from '@material-ui/core/Grid'
-import IconButton from '@material-ui/core/IconButton'
-import MenuItem from '@material-ui/core/MenuItem'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import Typography from '@material-ui/core/Typography'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+import Collapse from '@mui/material/Collapse'
+import Divider from '@mui/material/Divider'
+import FormHelperText from '@mui/material/FormHelperText'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import MenuItem from '@mui/material/MenuItem'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { ICode, ILocation, IReserveItem, ReserveItemFormProps } from '@service'
 import React, { useEffect, useState } from 'react'
 import { Controller, useWatch } from 'react-hook-form'
@@ -148,7 +150,7 @@ const ReserveItemBasic = (props: ReserveItemBasicProps) => {
             }}
           />
 
-          <IconButton onClick={handleExpandClick}>
+          <IconButton onClick={handleExpandClick} size="large">
             <ExpandMoreIcon />
           </IconButton>
         </CardActions>
@@ -289,8 +291,8 @@ const ReserveItemBasic = (props: ReserveItemBasicProps) => {
                   alignItems="center"
                   spacing={1}
                 >
-                  <Grid item>{t('common.free')}</Grid>
-                  <Grid item>
+                  <Grid>{t('common.free')}</Grid>
+                  <Grid>
                     <Controller
                       name="isPaid"
                       control={control}
@@ -305,7 +307,7 @@ const ReserveItemBasic = (props: ReserveItemBasicProps) => {
                       )}
                     />
                   </Grid>
-                  <Grid item>{t('common.paid')}</Grid>
+                  <Grid>{t('common.paid')}</Grid>
                 </Grid>
               </Typography>
             </Box>

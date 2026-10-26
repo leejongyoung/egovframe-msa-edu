@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import { Color } from '@material-ui/lab/Alert'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import { AlertColor as Color } from '@mui/material/Alert'
 import { useTranslation } from 'react-i18next'
 import { ConfirmPopover } from '@components/Confirm'
 import { useSnackbar } from 'notistack'
@@ -81,7 +83,7 @@ const DetailButtons: React.FC<IDetailButtonProps> = ({
     <>
       <Box className={classes.container}>
         {handleList && (
-          <Button variant="contained" onClick={handleList} color="default">
+          <Button variant="contained" onClick={handleList}>
             {t('label.button.list')}
           </Button>
         )}

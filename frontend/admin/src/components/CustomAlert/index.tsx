@@ -1,18 +1,20 @@
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Button, { ButtonProps } from '@material-ui/core/Button'
-import Dialog, { DialogProps } from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import { Color } from '@material-ui/lab/Alert'
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
-import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined'
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined'
-import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined'
-import { Typography } from '@material-ui/core'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Button, { ButtonProps } from '@mui/material/Button'
+import Dialog, { DialogProps } from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import { AlertColor as Color } from '@mui/material/Alert'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined'
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined'
+import { Typography } from '@mui/material'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,7 +71,7 @@ const CustomAlert = (props: CustomAlertPrpps) => {
       aria-describedby="alert-dialog-description"
       {...rest}
     >
-      <DialogTitle id="alert-dialog-title" disableTypography={true}>
+      <DialogTitle id="alert-dialog-title">
         <Typography variant="h5">
           {icon()} {title || t('common.noti')}
         </Typography>

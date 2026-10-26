@@ -1,37 +1,32 @@
 import React from 'react'
-import {
-  DataGrid,
-  DataGridProps,
-  GridColDef,
-} from '@material-ui/data-grid'
-import withWidth, {
-  WithWidthProps,
-} from '@material-ui/core/withWidth'
+import { DataGrid, DataGridProps, GridColDef } from '@mui/x-data-grid'
 import { DEFUALT_GRID_PAGE_SIZE } from '@constants'
+import useWidth from '@hooks/useWidth'
 import DataGridPagination from './DataGridPagination'
 
-interface DataGridTableProps extends WithWidthProps, DataGridProps {
+interface DataGridTableProps extends DataGridProps {
   xsColumns: GridColDef[]
 }
 
 const DataGridTable = (props: DataGridTableProps) => {
-  const { columns, rows, xsColumns, width, getRowId, pageSize, ...rest } = props
+  const { columns, rows, xsColumns, getRowId, ...rest } = props
+  const width = useWidth()
 
   return (
     <div className="list">
       <DataGrid
         rows={rows || []}
         columns={width === 'xs' ? xsColumns : columns}
-        pageSize={pageSize || DEFUALT_GRID_PAGE_SIZE}
-        disableSelectionOnClick
+        initialState={{ pagination: { paginationModel: { page: 0, pageSize: DEFUALT_GRID_PAGE_SIZE } } }}
+        disableRowSelectionOnClick
         disableColumnFilter
         disableColumnMenu
         disableDensitySelector
-        headerHeight={width === 'xs' ? 0 : 70}
+        columnHeaderHeight={width === 'xs' ? 0 : 70}
         rowHeight={width === 'xs' ? 80 : 70}
         autoHeight
         pagination
-        components={{ Pagination: DataGridPagination }}
+        slots={{ pagination: DataGridPagination }}
         getRowId={getRowId || (r => r.id)}
         {...rest}
       />
@@ -39,4 +34,4 @@ const DataGridTable = (props: DataGridTableProps) => {
   )
 }
 
-export default withWidth()(DataGridTable)
+export default DataGridTable

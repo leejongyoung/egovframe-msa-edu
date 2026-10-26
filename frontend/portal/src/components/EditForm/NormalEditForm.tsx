@@ -5,8 +5,8 @@ import Upload, { UploadType } from '@components/Upload'
 import ValidationAlert from '@components/ValidationAlert'
 import { DLWrapper } from '@components/WriteDLFields'
 import { EDITOR_MAX_LENGTH } from '@constants'
-import Divider from '@material-ui/core/Divider'
-import Hidden from '@material-ui/core/Hidden'
+import Divider from '@mui/material/Divider'
+import Hidden from '@components/Hidden'
 import { BoardFormContext } from '@pages/board/[skin]/[board]/edit/[id]'
 import { IPostsForm } from '@service'
 import { getTextLength } from '@utils'
@@ -140,7 +140,7 @@ const NormalEditForm = (props: NormalEditFormProps) => {
                   />
                 )}
               </Hidden>
-              <Hidden xsDown>
+              <Hidden smDown>
                 <dl>
                   <dt className="import">{t('posts.posts_content')}</dt>
                   <dd>
@@ -206,7 +206,7 @@ const NormalEditForm = (props: NormalEditFormProps) => {
       </form>
       <BottomButtons handleButtons={bottomButtons} />
     </>
-  )
+  );
 }
 
 export { NormalEditForm }

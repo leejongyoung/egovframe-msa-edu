@@ -1,11 +1,13 @@
 import ValidationAlert from '@components/ValidationAlert'
 import { EmailStorage } from '@libs/Storage/emailStorage'
 import { EMAIL_PATTERN } from '@utils'
-import Alert from '@material-ui/lab/Alert'
+import Alert from '@mui/material/Alert'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { makeStyles, Theme } from '@material-ui/core/styles'
+import { Theme } from '@mui/material/styles';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   alert: {

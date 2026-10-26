@@ -1,13 +1,15 @@
 import { DetailButtons } from '@components/Buttons'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
-import Box from '@material-ui/core/Box'
-import FormControl from '@material-ui/core/FormControl'
-import Grid from '@material-ui/core/Grid'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
+import Box from '@mui/material/Box'
+import FormControl from '@mui/material/FormControl'
+import Grid from '@mui/material/Grid'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import TextField from '@mui/material/TextField'
 import {
   codeService,
   ICode,
@@ -20,7 +22,7 @@ import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { format } from '@utils'
 import { AxiosError } from 'axios'
 import { GetServerSideProps } from 'next'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -159,7 +161,12 @@ const UserItem = ({
       <FormProvider {...methods}>
         <form>
           <Grid container spacing={1}>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="email"
@@ -190,7 +197,12 @@ const UserItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="password"
@@ -231,7 +243,12 @@ const UserItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="passwordConfirm"
@@ -273,7 +290,12 @@ const UserItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="userName"
@@ -304,7 +326,12 @@ const UserItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="roleId-label" required>
                   {t('role')}
@@ -334,7 +361,12 @@ const UserItem = ({
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="userStateCode-label" required>
                   {t('user.user_state_code')}

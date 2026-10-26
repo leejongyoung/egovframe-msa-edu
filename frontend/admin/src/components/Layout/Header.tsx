@@ -1,11 +1,14 @@
 import React, { useCallback } from 'react'
 import clsx from 'clsx'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
-import Typography from '@material-ui/core/Typography'
-import { Theme, makeStyles, createStyles } from '@material-ui/core/styles'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
+import MenuIcon from '@mui/icons-material/Menu'
+import Typography from '@mui/material/Typography'
+import { Theme } from '@mui/material/styles'
+
+import makeStyles from '@mui/styles/makeStyles'
+import createStyles from '@mui/styles/createStyles'
 
 import { DEFAULT_APP_NAME, DRAWER_WIDTH } from '@constants'
 import Profile from './Profile'
@@ -87,6 +90,7 @@ const Header: React.FC<IHeaderProps> = ({ open, onClick }) => {
           className={clsx(classes.menuButton, {
             [classes.hide]: open,
           })}
+          size="large"
         >
           <MenuIcon />
         </IconButton>

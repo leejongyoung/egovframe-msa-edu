@@ -4,18 +4,13 @@ import DataGridTable from '@components/TableList/DataGridTable'
 import { GRID_ROWS_PER_PAGE_OPTION } from '@constants'
 import useSearchTypes from '@hooks/useSearchTypes'
 import { convertStringToDateFormat, format as dateFormat } from '@libs/date'
-import { Box } from '@material-ui/core'
-import {
-  GridCellParams,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-  MuiEvent,
-} from '@material-ui/data-grid'
-import FiberNewIcon from '@material-ui/icons/FiberNew'
+import { Box } from '@mui/material'
+import { GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
+import FiberNewIcon from '@mui/icons-material/FiberNew'
 import { Page } from '@service'
 import { conditionAtom } from '@stores'
 import { rownum } from '@utils'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { createRef, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
@@ -29,8 +24,7 @@ const getColumns: ColumnsType = (data, t) => {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'desc'),
+      valueGetter: (_value, row, _column, apiRef) => rownum(data, apiRef.current.getRowIndexRelativeToVisibleRows(apiRef.current.getRowId(row)), 'desc'),
     },
     {
       field: 'postsTitle',
@@ -39,7 +33,7 @@ const getColumns: ColumnsType = (data, t) => {
       flex: 1,
       sortable: false,
       cellClassName: 'title',
-      renderCell: function renderCellPostsTitle(params: GridValueGetterParams) {
+      renderCell: function renderCellPostsTitle(params: GridRenderCellParams) {
         // eslint-disable-next-line no-param-reassign
         // gridApiRef.current = params.api // api
         return (
@@ -74,9 +68,9 @@ const getColumns: ColumnsType = (data, t) => {
       align: 'center',
       minWidth: 140,
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        params.value
-          ? dateFormat(new Date(params.value as string), 'yyyy-MM-dd')
+      valueFormatter: (value) =>
+        value
+          ? dateFormat(new Date(value as string), 'yyyy-MM-dd')
           : null,
     },
     {
@@ -87,7 +81,7 @@ const getColumns: ColumnsType = (data, t) => {
       minWidth: 100,
       sortable: false,
     },
-  ]
+  ];
 }
 
 const getXsColumns: ColumnsType = (data, t) => {
@@ -104,7 +98,7 @@ const getXsColumns: ColumnsType = (data, t) => {
   function renderCell(params: GridCellParams) {
     return (
       <div>
-        <div className="title">{params.value}</div>
+        <div className="title">{String(params.value ?? '')}</div>
         <div className="sub">
           <p>{params.row.createdName}</p>
           <p>
@@ -216,14 +210,15 @@ const NormalBoardList = (props: NormalBoardListProps) => {
         rows={data?.content}
         xsColumns={xsColumns}
         getRowId={r => r.postsNo}
-        pageSize={pageSize}
         rowCount={data?.totalElements}
-        page={page}
-        onPageChange={handlePageChange}
         paginationMode="server"
         onCellClick={handleCellClick}
-      />
+        paginationModel={{
+          page: page,
+          pageSize: pageSize
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)} />
     </>
-  )
+  );
 }
 export { NormalBoardList }

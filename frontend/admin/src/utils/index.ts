@@ -30,7 +30,7 @@ export interface Page {
   sort: Sort
   totalElements: number
   totalPages: number
-  content: any[] | []
+  content: any[]
 }
 
 // DataGrid rownum 계산..

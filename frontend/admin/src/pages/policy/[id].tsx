@@ -2,14 +2,16 @@ import { DetailButtons } from '@components/Buttons'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
 import Editor from '@components/Editor'
 import { getCurrentDate } from '@libs/date'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import MenuItem from '@material-ui/core/MenuItem'
-import Paper from '@material-ui/core/Paper'
-import Select from '@material-ui/core/Select'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import TextField from '@material-ui/core/TextField'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import MenuItem from '@mui/material/MenuItem'
+import Paper from '@mui/material/Paper'
+import Select from '@mui/material/Select'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
 import { PolicySavePayload, policyService } from '@service'
 import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { AxiosError } from 'axios'
@@ -144,10 +146,20 @@ const PolicyItem = ({ id, initData, typeList }: IPolicyItemsProps) => {
       <FormProvider {...methods}>
         <form>
           <Grid container spacing={1}>
-            <Grid item xs={12} sm={2}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 2,
+              }}
+            >
               <Paper className={classes.label}>{t('common.type')}</Paper>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4,
+              }}
+            >
               <Controller
                 name="policyType"
                 render={({ field }) => (
@@ -163,10 +175,20 @@ const PolicyItem = ({ id, initData, typeList }: IPolicyItemsProps) => {
                 defaultValue={initData?.type || 'TOS'}
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 2,
+              }}
+            >
               <Paper className={classes.label}>{t('common.use_at')}</Paper>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 4,
+              }}
+            >
               <Paper className={classes.switch}>
                 <Controller
                   name="isUse"
@@ -182,10 +204,20 @@ const PolicyItem = ({ id, initData, typeList }: IPolicyItemsProps) => {
                 />
               </Paper>
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 2,
+              }}
+            >
               <Paper className={classes.label}>{t('policy.title')}</Paper>
             </Grid>
-            <Grid item xs={12} sm={10}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 10,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="title"

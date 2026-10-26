@@ -9,7 +9,7 @@ import {
 } from '@service'
 import { format, formatBytes } from '@utils'
 import axios from 'axios'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import React, {
   createContext,
   forwardRef,

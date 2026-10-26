@@ -5,20 +5,18 @@ import { GRID_PAGE_SIZE } from '@constants'
 import usePage from '@hooks/usePage'
 import useSearchTypes from '@hooks/useSearchType'
 import { convertStringToDateFormat } from '@libs/date'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 import { locationService } from '@service'
 import { conditionAtom, errorStateSelector } from '@stores'
 import { Page, rownum } from '@utils'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo } from 'react'
-import { TFunction, useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
+import { TFunction } from 'i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 // material-ui style
 const useStyles = makeStyles((theme: Theme) =>
@@ -57,8 +55,12 @@ const getColumns: ColumnType = (
       align: 'center',
       width: 80,
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'asc'),
+      valueGetter: (value, row, column, apiRef) =>
+        rownum(
+          data,
+          apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+          'asc',
+        ),
     },
     {
       field: 'locationName',
@@ -75,7 +77,7 @@ const getColumns: ColumnType = (
       align: 'center',
       width: 120,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Switch
           checked={Boolean(params.value)}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -91,11 +93,8 @@ const getColumns: ColumnType = (
       align: 'center',
       width: 200,
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        convertStringToDateFormat(
-          params.value as string,
-          'yyyy-MM-dd HH:mm:ss',
-        ),
+      valueFormatter: (value, row, column, apiRef) =>
+        convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss'),
     },
     {
       field: 'locationId',
@@ -104,7 +103,7 @@ const getColumns: ColumnType = (
       align: 'center',
       width: 200,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <GridButtons
           id={params.value as string}
           handleDelete={handleDelete}
@@ -209,10 +208,12 @@ const Location = () => {
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        page={page}
-        onPageChange={handlePageChange}
         getRowId={r => r.locationId}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

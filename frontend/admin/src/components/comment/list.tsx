@@ -1,25 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { AxiosError } from 'axios'
 import { useSetRecoilState } from 'recoil'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import classNames from 'classnames'
 
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-} from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import Typography from '@material-ui/core/Typography'
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
-import RefreshIcon from '@material-ui/icons/Refresh'
-import Link from '@material-ui/core/Link'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import Button from '@material-ui/core/Button'
+import { Theme, useTheme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import Link from '@mui/material/Link'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Button from '@mui/material/Button'
 
 import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import useUser from '@hooks/useUser'
@@ -384,9 +381,7 @@ const Comment: React.FC<ICommentProps> = ({
                   [classes.commentBox]: true,
                 })}
                 style={{
-                  paddingLeft: `${
-                    theme.spacing(2) + comment.depthSeq * theme.spacing(4)
-                  }px`,
+                  paddingLeft: theme.spacing(2 + comment.depthSeq * 4),
                 }}
               >
                 <CardContent className={classes.commentView}>

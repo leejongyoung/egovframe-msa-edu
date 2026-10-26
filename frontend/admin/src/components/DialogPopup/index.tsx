@@ -1,13 +1,13 @@
-import { Typography } from '@material-ui/core'
-import Dialog, { DialogProps } from '@material-ui/core/Dialog'
-import DialogActions, {
-  DialogActionsProps,
-} from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import IconButton from '@material-ui/core/IconButton'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import CloseIcon from '@material-ui/icons/Close'
+import { Typography } from '@mui/material'
+import Dialog, { DialogProps } from '@mui/material/Dialog'
+import DialogActions, { DialogActionsProps } from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import IconButton from '@mui/material/IconButton'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import CloseIcon from '@mui/icons-material/Close'
 import React from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -51,13 +51,14 @@ const DialogPopup = (props: DialogPopupProps) => {
       onClose={handleClose}
       {...rest}
     >
-      <DialogTitle disableTypography id="dialog-title">
+      <DialogTitle id="dialog-title">
         <Typography variant="h3"> {title || 'Popup'}</Typography>
         {handleClose && (
           <IconButton
             className={classes.close}
             aria-label="close"
             onClick={handleClose}
+            size="large"
           >
             <CloseIcon />
           </IconButton>

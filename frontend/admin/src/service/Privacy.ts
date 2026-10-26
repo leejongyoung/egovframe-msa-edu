@@ -36,7 +36,7 @@ export const privacyService = {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useSWR<Page, AxiosError>(
       [`${PRIVACY_URL}?size=${size}&page=${page}`, keywordType, keyword],
-      url => common.fetcher(url, { keywordType, keyword }),
+      ([url]) => common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   get: async (privacyNo: string) => axios.get(`${PRIVACY_URL}/${privacyNo}`),

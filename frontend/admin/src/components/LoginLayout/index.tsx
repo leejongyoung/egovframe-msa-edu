@@ -1,7 +1,7 @@
-import Box from '@material-ui/core/Box'
+import Box from '@mui/material/Box'
 import React from 'react'
 
-type Props = {}
+type Props = React.PropsWithChildren
 
 const LoginLayout: React.FC<Props> = ({ children }) => {
   return <Box>{children}</Box>

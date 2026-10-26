@@ -3,16 +3,18 @@ import { DetailButtons } from '@components/Buttons'
 import CustomAlert from '@components/CustomAlert'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
 import { Upload, UploadType } from '@components/Upload'
-import Box from '@material-ui/core/Box'
-import FormControl from '@material-ui/core/FormControl'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Grid from '@material-ui/core/Grid'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import TextField from '@material-ui/core/TextField'
+import Box from '@mui/material/Box'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Grid from '@mui/material/Grid'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
 import {
   BannerSavePayload,
   bannerService,
@@ -27,7 +29,7 @@ import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { format } from '@utils'
 import { AxiosError } from 'axios'
 import { GetServerSideProps } from 'next'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form'
@@ -277,7 +279,12 @@ const BannerItem = ({
       <FormProvider {...methods}>
         <form>
           <Grid container spacing={1}>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="banner-site-label" required>
                   {t('menu.site')}
@@ -308,7 +315,12 @@ const BannerItem = ({
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="bannerTypeCode-label" required>
                   {t('banner.banner_type_code')}
@@ -338,7 +350,12 @@ const BannerItem = ({
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="bannerTitle"
@@ -369,7 +386,12 @@ const BannerItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Upload
                   accept={'image/*'}
@@ -383,7 +405,12 @@ const BannerItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={9}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 9,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="urlAddr"
@@ -413,7 +440,12 @@ const BannerItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 3,
+              }}
+            >
               <Box boxShadow={1} className={classes.switchBox}>
                 <FormControlLabel
                   label={t('banner.new_window_at')}
@@ -435,7 +467,12 @@ const BannerItem = ({
                 />
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="bannerContent"
@@ -470,7 +507,12 @@ const BannerItem = ({
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <Box boxShadow={1}>
                 <Controller
                   name="sortSeq"

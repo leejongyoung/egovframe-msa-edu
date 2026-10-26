@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { FieldError } from 'react-hook-form'
+import { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import Alert, { AlertProps } from '@material-ui/lab/Alert'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import Alert, { AlertProps } from '@mui/material/Alert'
+import { Theme } from '@mui/material/styles'
+
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 
 import { format } from '@utils'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      padding: `0px ${theme.spacing(1)}px`,
+      padding: `0px ${theme.spacing(1)}`,
     },
   }),
 )
 
 export interface ValidaltionAlertProps extends AlertProps {
   message?: string
-  fieldError?: FieldError
+  fieldError?: FieldError | Merge<FieldError, FieldErrorsImpl<any>>
   target?: any[]
   label?: string
 }
@@ -65,12 +68,12 @@ const ValidationAlert = (props: ValidaltionAlertProps) => {
       return
     }
 
-    if (fieldError.message) {
+    if (typeof fieldError.message === 'string') {
       setValidMessage(fieldError.message)
       return
     }
 
-    const valid = validMessages[fieldError.type]
+    const valid = validMessages[String(fieldError.type)]
     if (valid.isFormat) {
       setValidMessage(format(t(valid.code), target))
       return

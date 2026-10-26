@@ -7,21 +7,19 @@ import useSearchTypes from '@hooks/useSearchType'
 // 내부 컴포넌트 및 custom hook, etc...
 import { convertStringToDateFormat } from '@libs/date'
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 //api
 import { policyService } from '@service'
 import { conditionAtom, errorStateSelector } from '@stores'
 import { Page, rownum } from '@utils'
 import { AxiosError } from 'axios'
 import { GetServerSideProps, NextPage } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { TFunction } from 'i18next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo } from 'react'
 // 상태관리 recoil
@@ -64,8 +62,12 @@ const getColumns: ColumnsType = (
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'desc'),
+      valueGetter: (value, row, column, apiRef) =>
+        rownum(
+          data,
+          apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+          'desc',
+        ),
     },
     {
       field: 'type',
@@ -74,8 +76,8 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 150,
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) => {
-        const type = typeList?.find(item => item.codeId === params.value)
+      valueGetter: (value, row, column, apiRef) => {
+        const type = typeList?.find(item => item.codeId === value)
         return type?.codeName || ''
       },
     },
@@ -93,7 +95,7 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 120,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Switch
           checked={Boolean(params.value)}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -109,11 +111,8 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 120,
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) => {
-        return convertStringToDateFormat(
-          params.value as string,
-          'yyyy-MM-dd HH:mm:ss',
-        )
+      valueFormatter: (value, row, column, apiRef) => {
+        return convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss')
       },
     },
     {
@@ -123,7 +122,7 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 200,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <GridButtons
           id={params.value as string}
           handleDelete={deletePolicy}
@@ -265,9 +264,11 @@ const Policy: NextPage<IPolicyProps> = ({ typeList }) => {
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        page={page}
-        onPageChange={handlePageChange}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

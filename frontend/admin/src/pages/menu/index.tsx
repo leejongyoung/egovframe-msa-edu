@@ -1,22 +1,25 @@
+import { SelectChangeEvent } from '@mui/material/Select'
 import { ConfirmDialog } from '@components/Confirm'
 import CustomAlert from '@components/CustomAlert'
 import DraggableTreeMenu from '@components/DraggableTreeMenu'
 import TreeSubButtons from '@components/DraggableTreeMenu/TreeSubButtons'
 import { findTreeItem } from '@components/DraggableTreeMenu/TreeUtils'
 import { MenuEditForm } from '@components/EditForm'
-import Button from '@material-ui/core/Button'
-import ButtonGroup from '@material-ui/core/ButtonGroup'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import Grid from '@material-ui/core/Grid'
-import MenuItem from '@material-ui/core/MenuItem'
-import Paper from '@material-ui/core/Paper'
-import Select from '@material-ui/core/Select'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import AddIcon from '@material-ui/icons/Add'
-import DeleteIcon from '@material-ui/icons/Delete'
-import SettingsIcon from '@material-ui/icons/Settings'
+import Button from '@mui/material/Button'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Grid from '@mui/material/Grid'
+import MenuItem from '@mui/material/MenuItem'
+import Paper from '@mui/material/Paper'
+import Select from '@mui/material/Select'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import SettingsIcon from '@mui/icons-material/Settings'
 import {
   codeService,
   ICode,
@@ -34,7 +37,7 @@ import {
   errorStateSelector,
   treeChangeNameAtom,
 } from '@stores'
-import produce from 'immer'
+import { produce } from 'immer'
 import { GetServerSideProps } from 'next'
 import { useSnackbar } from 'notistack'
 import React, { createContext, useEffect, useState } from 'react'
@@ -161,7 +164,7 @@ const Menu = ({ sites, menuTypes }: MenuProps) => {
     }
   }, [treeChangeName])
 
-  const handleSiteChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSiteChange = (event: SelectChangeEvent<unknown>) => {
     setSiteState(event.target.value as number)
   }
 
@@ -302,7 +305,12 @@ const Menu = ({ sites, menuTypes }: MenuProps) => {
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
-        <Grid item sm={12} md={4}>
+        <Grid
+          size={{
+            sm: 12,
+            md: 4,
+          }}
+        >
           <Paper className={classes.paper}>
             <Select fullWidth value={siteState} onChange={handleSiteChange}>
               {sites?.map(item => (
@@ -350,7 +358,12 @@ const Menu = ({ sites, menuTypes }: MenuProps) => {
             handleConfirm={handleConfirm}
           />
         </Grid>
-        <Grid item sm={12} md={8}>
+        <Grid
+          size={{
+            sm: 12,
+            md: 8,
+          }}
+        >
           <MenuFormContext.Provider
             value={{ menuFormData, setMenuFormDataHandler }}
           >

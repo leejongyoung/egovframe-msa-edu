@@ -3,9 +3,11 @@ import Upload, { UploadType } from '@components/Upload'
 import { DLWrapper } from '@components/WriteDLFields'
 import { DEFAULT_ERROR_MESSAGE } from '@constants'
 import { convertStringToDateFormat } from '@libs/date'
-import Backdrop from '@material-ui/core/Backdrop'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { IReserveComplete } from '@pages/reserve/[category]/[id]'
 import {
   IReserve,
@@ -15,7 +17,7 @@ import {
   UploadInfoReqeust,
 } from '@service'
 import { errorStateSelector, userAtom } from '@stores'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'

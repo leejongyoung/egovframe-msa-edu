@@ -1,8 +1,8 @@
-import { Link, Typography } from '@material-ui/core'
-import IconButton from '@material-ui/core/IconButton'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import { Link, Typography } from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -40,6 +40,7 @@ const Profile: React.FC<IProfileProps> = ({ id, email }) => {
         aria-haspopup="true"
         onClick={handleMenu}
         color="inherit"
+        size="large"
       >
         <Typography variant="subtitle1">{email}</Typography>
         <KeyboardArrowDownIcon />

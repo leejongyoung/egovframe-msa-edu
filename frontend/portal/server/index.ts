@@ -13,11 +13,11 @@ const startServer = async () => {
     await app.prepare()
     const server = express()
 
-    server.all('*', (req: Request, res: Response) => {
+    server.use((req: Request, res: Response) => {
       return handle(req, res)
     })
 
-    server.listen(port, (err?: any) => {
+    server.listen(port, (err?: Error) => {
       if (err) throw err
       console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`)
     })

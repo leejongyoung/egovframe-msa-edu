@@ -61,7 +61,7 @@ export const postsService = {
         keywordType,
         keyword,
       ],
-      url => common.fetcher(url, { keywordType, keyword }),
+      ([url]) => common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   get: async (boardNo: number, postsNo: number) =>

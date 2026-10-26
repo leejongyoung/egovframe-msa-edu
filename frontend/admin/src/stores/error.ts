@@ -15,7 +15,7 @@ interface IErrors {
 
 export interface IErrorProps {
   open?: boolean
-  error?: AxiosError
+  error?: AxiosError<{ message?: string; errors?: IErrors[] }>
   status?: number
   message?: string
   errors?: IErrors[]

@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { NextPageContext } from 'next'
 import Head from 'next/head'
 import { AppContext, AppProps } from 'next/app'
-import { ThemeProvider } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { Theme } from '@material-ui/core/styles'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
+import { ThemeProvider as LegacyThemeProvider } from '@mui/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import { Theme } from '@mui/material/styles'
 import { RecoilRoot } from 'recoil'
 import { SnackbarProvider } from 'notistack'
 
@@ -13,13 +14,19 @@ import darkTheme from '@styles/darkTheme'
 import App from '@components/App/App'
 import axios from 'axios'
 import '@libs/i18n'
-import { appWithTranslation, useTranslation } from 'next-i18next'
+import { appWithTranslation, useTranslation } from 'next-i18next/pages'
 import { useLocalStorage } from '@hooks/useLocalStorage'
 import { SITE_ID } from '@constants/env'
 import { BASE_URL, CUSTOM_HEADER_SITE_ID_KEY } from '@constants'
 import { CookiesProvider } from 'react-cookie'
 
 import 'react-datepicker/dist/react-datepicker.css'
+import 'ckeditor5/ckeditor5.css'
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 export type PageProps = {
   pathname?: string
@@ -62,37 +69,41 @@ const MyApp = (props: AppProps) => {
 
   return (
     <RecoilRoot>
-      <ThemeProvider theme={selectTheme}>
-        <Head>
-          <link rel="icon" type="image/x-icon" href="/favicon.ico"></link>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
-          />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          />
-        </Head>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={selectTheme}>
+          <LegacyThemeProvider theme={selectTheme}>
+            <Head>
+              <link rel="icon" type="image/x-icon" href="/favicon.ico"></link>
+              <meta
+                name="viewport"
+                content="minimum-scale=1, initial-scale=1, width=device-width"
+              />
+              <link
+                rel="stylesheet"
+                href="https://fonts.googleapis.com/icon?family=Material+Icons"
+              />
+            </Head>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
 
-        <SnackbarProvider
-          maxSnack={3}
-          iconVariant={{
-            success: '✅ ',
-            error: '✖ ',
-            warning: '⚠ ',
-            info: 'ℹ️ ',
-          }}
-          autoHideDuration={2000}
-          preventDuplicate={true}
-        >
-          <CookiesProvider>
-            <App component={Component} {...pageProps} />
-          </CookiesProvider>
-        </SnackbarProvider>
-      </ThemeProvider>
+            <SnackbarProvider
+              maxSnack={3}
+              iconVariant={{
+                success: '✅ ',
+                error: '✖ ',
+                warning: '⚠ ',
+                info: 'ℹ️ ',
+              }}
+              autoHideDuration={2000}
+              preventDuplicate={true}
+            >
+              <CookiesProvider>
+                <App component={Component} {...pageProps} />
+              </CookiesProvider>
+            </SnackbarProvider>
+          </LegacyThemeProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </RecoilRoot>
   )
 }

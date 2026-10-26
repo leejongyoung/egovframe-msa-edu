@@ -1,15 +1,12 @@
 import CollapsibleTable from '@components/TableList/CollapsibleTable'
 import { convertStringToDateFormat, format as dateFormat } from '@libs/date'
-import {
-  GridCellParams,
-  GridRowData,
-  GridValueFormatterParams,
-} from '@material-ui/data-grid'
+import { GridRowModel } from '@mui/x-data-grid'
+import { CollapseCellParams } from '@components/TableList/CollapsibleTable'
 import { Page } from '@service'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo } from 'react'
-import { ColumnsType } from '.'
+import { CollapseColumnsType } from '.'
 
 interface QnABaordListProps {
   data: Page
@@ -21,7 +18,7 @@ interface QnABaordListProps {
   ) => void
 }
 
-const getColumns: ColumnsType = (data, t) => {
+const getColumns: CollapseColumnsType = (data, t) => {
   return [
     {
       field: 'postsTitle',
@@ -38,7 +35,7 @@ const getColumns: ColumnsType = (data, t) => {
       width: 100,
       sortable: false,
       cellClassName: 'span',
-      renderCell: (params: GridCellParams) => {
+      renderCell: (params: CollapseCellParams) => {
         /**
          * @todo
          * 상태 컬럼 생기면 수정 필요
@@ -58,9 +55,9 @@ const getColumns: ColumnsType = (data, t) => {
       width: 140,
       cellClassName: 'span',
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        params.value
-          ? dateFormat(new Date(params.value as string), 'yyyy-MM-dd')
+      valueFormatter: (value) =>
+        value
+          ? dateFormat(new Date(value as string), 'yyyy-MM-dd')
           : null,
     },
     {
@@ -72,17 +69,17 @@ const getColumns: ColumnsType = (data, t) => {
       width: 100,
       sortable: false,
     },
-  ]
+  ];
 }
 
-const getXsColumns: ColumnsType = (data, t) => {
+const getXsColumns: CollapseColumnsType = (data, t) => {
   return [
     {
       field: 'postsTitle',
       headerName: t('posts.posts_title'),
       headerAlign: 'center',
       sortable: false,
-      renderCell: (params: GridCellParams) => {
+      renderCell: (params: CollapseCellParams) => {
         return (
           <div>
             <div className="title">{params.value}</div>
@@ -113,7 +110,7 @@ const QnABaordList = ({ data, page, handleChangePage }: QnABaordListProps) => {
     [data, router.query, i18n],
   )
   const renderCollapseRow = useCallback(
-    (row: GridRowData) => {
+    (row: GridRowModel) => {
       return (
         <>
           <p>{row['postContent']}</p>

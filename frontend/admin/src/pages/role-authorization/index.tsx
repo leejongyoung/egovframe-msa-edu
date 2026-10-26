@@ -6,17 +6,14 @@ import { GRID_PAGE_SIZE, GRID_ROW_HEIGHT } from '@constants'
 import usePage from '@hooks/usePage'
 // 내부 컴포넌트 및 custom hook, etc...
 import { convertStringToDateFormat } from '@libs/date'
-import { Button } from '@material-ui/core'
-import Box from '@material-ui/core/Box'
+import { Button } from '@mui/material'
+import Box from '@mui/material/Box'
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import {
-  DataGrid,
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-} from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import { DataGrid, GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 // api
 import {
   IRole,
@@ -32,7 +29,8 @@ import {
 import { format, Page } from '@utils'
 import { AxiosError } from 'axios'
 import { GetServerSideProps } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { TFunction } from 'i18next'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 // 상태관리 recoil
 import { useRecoilValue, useSetRecoilState } from 'recoil'
@@ -87,8 +85,8 @@ const getRoleColumns: RoleColumnsType = (data, handleManageRole, t) => [
     align: 'center',
     width: 200,
     sortable: false,
-    valueFormatter: (params: GridValueFormatterParams) =>
-      convertStringToDateFormat(params.value as string, 'yyyy-MM-dd HH:mm:ss'),
+    valueFormatter: (value, row, column, apiRef) =>
+      convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss'),
   },
   {
     field: 'buttons',
@@ -97,7 +95,7 @@ const getRoleColumns: RoleColumnsType = (data, handleManageRole, t) => [
     align: 'center',
     width: 150,
     sortable: false,
-    renderCell: function renderCellRoleId(params: GridCellParams) {
+    renderCell: function renderCellRoleId(params: GridRenderCellParams) {
       return (
         <div>
           <Box>
@@ -176,7 +174,7 @@ const getAuthorizationColumns: AuthorizationColumnsType = (
     align: 'center',
     width: 110,
     sortable: false,
-    renderCell: function renderCellCreatedAt(params: GridCellParams) {
+    renderCell: function renderCellCreatedAt(params: GridRenderCellParams) {
       // eslint-disable-next-line no-param-reassign
       roleAuthorizationApiRef.current = params.api // api
       return (
@@ -433,7 +431,7 @@ const RoleAuthorization = ({ roles, initRoleId }: IRoleAuthorizationProps) => {
   const saveButton: IButtonProps = {
     label: t('label.button.selection_registration'),
     variant: 'outlined',
-    color: 'default',
+    color: 'inherit',
     size: 'small',
     confirmMessage: t('msg.confirm.registration'),
     handleButton: handleSave,
@@ -464,7 +462,7 @@ const RoleAuthorization = ({ roles, initRoleId }: IRoleAuthorizationProps) => {
   const deleteButton: IButtonProps = {
     label: t('label.button.selection_delete'),
     variant: 'outlined',
-    color: 'default',
+    color: 'inherit',
     size: 'small',
     confirmMessage: t('msg.confirm.delete'),
     handleButton: handleDelete,
@@ -516,11 +514,15 @@ const RoleAuthorization = ({ roles, initRoleId }: IRoleAuthorizationProps) => {
         autoHeight
         getRowId={r => r.roleId}
         hideFooter
-        selectionModel={(roles || [])
-          .filter(r => r.roleId === roleId)
-          .map(r => r.roleId)}
-        onSelectionModelChange={newSelection => {
-          setRoleId(newSelection[0]?.toString())
+        disableRowSelectionExcludeModel
+        rowSelectionModel={{
+          type: 'include',
+          ids: new Set(
+            (roles || []).filter(r => r.roleId === roleId).map(r => r.roleId),
+          ),
+        }}
+        onRowSelectionModelChange={newSelection => {
+          setRoleId(Array.from(newSelection.ids)[0]?.toString())
         }}
       />
       <Search
@@ -529,17 +531,19 @@ const RoleAuthorization = ({ roles, initRoleId }: IRoleAuthorizationProps) => {
         conditionKey={conditionKey}
       />
       <CustomDataGrid
-        page={page}
         classes={classes}
         rows={data?.content}
         columns={authorizationColumns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        onPageChange={handlePageChange}
         getRowId={r => r.authorizationNo}
         checkboxSelection
-        disableSelectionOnClick
+        disableRowSelectionOnClick
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
       <CustomButtons buttons={[saveButton, deleteButton]} />
       <CustomAlert

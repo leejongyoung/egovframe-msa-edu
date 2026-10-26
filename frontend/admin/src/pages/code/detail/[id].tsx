@@ -1,18 +1,20 @@
 import { DetailButtons } from '@components/Buttons'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import CardHeader from '@material-ui/core/CardHeader'
-import Divider from '@material-ui/core/Divider'
-import FormControl from '@material-ui/core/FormControl'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Grid from '@material-ui/core/Grid'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import TextField from '@material-ui/core/TextField'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+import Divider from '@mui/material/Divider'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Grid from '@mui/material/Grid'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
 import { CodeSavePayload, codeService, ICode } from '@service'
 import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { AxiosError } from 'axios'
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
     },
     content: {
-      padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+      padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
     },
     formControl: {
       marginTop: theme.spacing(0.5),
@@ -137,7 +139,12 @@ const CodeItem = ({ id, parentCodes, initData }: ICodeItemsProps) => {
       <FormProvider {...methods}>
         <form>
           <Grid container spacing={1}>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <Card className={classes.root}>
                 <CardHeader title={t('code.title')} />
                 <Divider />
@@ -300,7 +307,12 @@ const CodeItem = ({ id, parentCodes, initData }: ICodeItemsProps) => {
         </form>
       </FormProvider>
       <Grid container spacing={1}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <DetailButtons
             handleList={() => {
               route.push('/code/detail')

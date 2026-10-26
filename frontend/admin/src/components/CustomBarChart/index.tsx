@@ -1,5 +1,7 @@
 import React from 'react'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import {
   Bar,
   BarChart as ReBarChart,
@@ -9,8 +11,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
+import type { TooltipContentProps } from 'recharts'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
 
 const MAB_BAR_THICKNESS = 50
 
@@ -34,7 +37,9 @@ const useStyles = makeStyles((theme: Theme) =>
 interface BarChartProps {
   data: any
   id: string
-  tooltipContent?: ({ active, payload, label }) => React.ReactNode
+  tooltipContent?: (
+    props: TooltipContentProps<number | string, number | string>,
+  ) => React.ReactNode
   title?: string
   handleCellClick?: (data, index) => void
   customxAxisTick?: (value: any, index: number) => string

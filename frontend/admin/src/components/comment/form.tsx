@@ -1,16 +1,13 @@
 import React, { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-} from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
+import { Theme, useTheme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 
 import useUser from '@hooks/useUser'
 import { IComment } from '@service'
@@ -141,7 +138,7 @@ const CommentForm: React.FC<ICommentFormProps> = ({
     <FormProvider {...methods}>
       <form
         style={{
-          paddingLeft: `${theme.spacing(1) + depthSeq * theme.spacing(4)}px`,
+          paddingLeft: theme.spacing(1 + depthSeq * 4),
         }}
       >
         <Box className={classes.commentCreator}>{user.userName}</Box>
@@ -190,7 +187,6 @@ const CommentForm: React.FC<ICommentFormProps> = ({
             <Button
               className={classes.ml1}
               variant="contained"
-              color="default"
               size="small"
               onClick={handleCancel}
             >

@@ -1,6 +1,8 @@
-import Paper from '@material-ui/core/Paper'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Tabs, { TabsProps } from '@material-ui/core/Tabs'
+import Paper from '@mui/material/Paper'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Tabs, { TabsProps } from '@mui/material/Tabs'
 import React, { useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -23,7 +25,7 @@ const HorizontalTabs = (props: HorizontalTabsProps) => {
   const classes = useStyles()
   const [value, setValue] = useState<string | number>(init)
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     handleTab(newValue)
     setValue(newValue)
   }

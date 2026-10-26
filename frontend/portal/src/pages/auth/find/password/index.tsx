@@ -1,7 +1,8 @@
 import ValidationAlert from '@components/ValidationAlert'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import { makeStyles, Theme } from '@material-ui/core/styles'
-import Alert from '@material-ui/lab/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert'
 import { userService } from '@service'
 import { EMAIL_PATTERN, format } from '@utils'
 import { useRouter } from 'next/router'

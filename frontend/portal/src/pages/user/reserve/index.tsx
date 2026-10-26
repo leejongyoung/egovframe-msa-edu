@@ -9,21 +9,16 @@ import { DEFUALT_GRID_PAGE_SIZE, GRID_ROWS_PER_PAGE_OPTION } from '@constants'
 import usePage from '@hooks/usePage'
 import useSearchTypes from '@hooks/useSearchTypes'
 import { convertStringToDateFormat } from '@libs/date'
-import Typography from '@material-ui/core/Typography'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-  MuiEvent,
-} from '@material-ui/data-grid'
+import Typography from '@mui/material/Typography'
+import { GridCellParams, GridColDef, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import { ICode, ILocation, Page, reserveService } from '@service'
 import { conditionAtom, conditionValue, userAtom } from '@stores'
 import { rownum } from '@utils'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import React, { createRef, useMemo, useState } from 'react'
-import { TFunction, useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { useRecoilValue } from 'recoil'
 
 type ColorType =
@@ -51,8 +46,7 @@ const getColumns: ColumnsType = (data, locations, categories, status, t) => {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'desc'),
+      valueGetter: (_value, row, _column, apiRef) => rownum(data, apiRef.current.getRowIndexRelativeToVisibleRows(apiRef.current.getRowId(row)), 'desc'),
     },
     {
       field: 'locationId',
@@ -129,12 +123,12 @@ const getColumns: ColumnsType = (data, locations, categories, status, t) => {
       align: 'center',
       minWidth: 140,
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        params.value
-          ? convertStringToDateFormat(String(params.value), 'yyyy-MM-dd HH:mm')
+      valueFormatter: (value) =>
+        value
+          ? convertStringToDateFormat(String(value), 'yyyy-MM-dd HH:mm')
           : null,
     },
-  ]
+  ];
 }
 
 const getXsColumns: ColumnsType = (data, locations, categories, status, t) => {
@@ -151,7 +145,7 @@ const getXsColumns: ColumnsType = (data, locations, categories, status, t) => {
   function renderCell(params: GridCellParams) {
     return (
       <div>
-        <div className="title">{params.value}</div>
+        <div className="title">{String(params.value ?? '')}</div>
         <div className="sub">
           <p>
             {
@@ -341,16 +335,17 @@ const UserReserve = (props: UserReserveProps) => {
           rows={data?.content}
           xsColumns={xsColumns}
           getRowId={r => r.reserveId}
-          pageSize={pageSize}
           rowCount={data?.totalElements}
-          page={page}
-          onPageChange={handlePageChange}
           paginationMode="server"
           onCellClick={handleCellClick}
-        />
+          paginationModel={{
+            page: page,
+            pageSize: pageSize
+          }}
+          onPaginationModelChange={model => handlePageChange(model.page)} />
       </div>
     </div>
-  )
+  );
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {

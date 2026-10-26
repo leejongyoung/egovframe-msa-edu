@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 import CustomAlert, { CustomAlertPrpps } from '@components/CustomAlert'
 import { UploadType } from '@components/Upload'
-import produce from 'immer'
+import { produce } from 'immer'
 
 interface AlertProps extends CustomAlertPrpps {
   message: string

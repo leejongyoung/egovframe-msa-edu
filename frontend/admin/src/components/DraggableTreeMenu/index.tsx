@@ -1,153 +1,190 @@
-import Tree, {
-  ItemId,
-  moveItemOnTree,
-  mutateTree,
-  RenderItemParams,
-  TreeData,
-  TreeDestinationPosition,
-  TreeSourcePosition,
-} from '@atlaskit/tree'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
+import type { DragStart, DropResult } from '@hello-pangea/dnd'
+import { Theme } from '@mui/material/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import { IMenuTree } from '@service'
 import { draggableTreeExpandedAtom, draggableTreeSelectedAtom } from '@stores'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import DraaggableTreeMenuItem from './DraaggableTreeMenuItem'
 import { TreeJson } from './TreeJson'
-import { convertJsonToTreeData } from './TreeUtils'
+import {
+  convertJsonToTreeData,
+  moveTreeItem,
+  updateTreeItem,
+} from './TreeUtils'
+import type { ItemId, TreeData, TreeDestinationPosition } from './TreeUtils'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      marginBottom: theme.spacing(1),
-    },
-    item: {
-      color: theme.palette.text.secondary,
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-    selected: {
-      backgroundColor: `#e8f0fe`,
-      color: '#1a73e8',
-    },
-  }),
-)
-
-const PADDING_PER_LEVEL = 40
+const useStyles = makeStyles((theme: Theme) => ({
+  root: { marginBottom: theme.spacing(1) },
+  item: {
+    color: theme.palette.text.secondary,
+    '&:hover': { backgroundColor: theme.palette.action.hover },
+  },
+  selected: { backgroundColor: '#e8f0fe', color: '#1a73e8' },
+  combine: { outline: `2px solid ${theme.palette.primary.main}` },
+}))
 
 export interface DraggableTreeMenuProps {
   data: IMenuTree[]
   handleTreeDnD: (tree: IMenuTree[]) => void
 }
 
-function DraggableTreeMenu(props: DraggableTreeMenuProps) {
+interface VisibleItem {
+  id: ItemId
+  parentId: ItemId
+  index: number
+  depth: number
+}
+
+// The indexed hierarchy remains separate from the visible drag list: collapsing
+// a branch must not remove its descendants when the branch is moved.
+const visibleItems = (tree: TreeData, dragging?: string): VisibleItem[] => {
+  const result: VisibleItem[] = []
+  const visit = (parentId: ItemId, depth: number) => {
+    tree.items[parentId].children.forEach((id, index) => {
+      result.push({ id, parentId, index, depth })
+      if (tree.items[id].isExpanded && String(id) !== dragging)
+        visit(id, depth + 1)
+    })
+  }
+  if (tree) visit(tree.rootId, 0)
+  return result
+}
+
+function DraggableTreeMenu({ data, handleTreeDnD }: DraggableTreeMenuProps) {
   const classes = useStyles()
-  const { data, handleTreeDnD } = props
-
-  const treeSelected = useRecoilValue(draggableTreeSelectedAtom)
-  const [treeExpanded, setTreeExpanded] = useRecoilState(
-    draggableTreeExpandedAtom,
-  )
-
+  const selected = useRecoilValue(draggableTreeSelectedAtom)
+  const [expanded, setExpanded] = useRecoilState(draggableTreeExpandedAtom)
   const [tree, setTree] = useState<TreeData>(null)
+  const [dragging, setDragging] = useState<string>()
 
   useEffect(() => {
-    setTreeExpanded('collapse')
+    setExpanded('collapse')
   }, [])
-
   useEffect(() => {
-    if (data) {
-      setTree(convertJsonToTreeData(data))
-    }
+    if (data) setTree(convertJsonToTreeData(data))
   }, [data])
-
   useEffect(() => {
-    if (treeExpanded === 'none') {
-      return
-    }
-
-    if (!tree) {
-      return
-    }
-
-    const expanded = treeExpanded === 'expand'
-
-    let treeData = tree
-    for (const key in tree.items) {
-      if (Object.prototype.hasOwnProperty.call(tree.items, key)) {
-        treeData = mutateTree(treeData, key, { isExpanded: expanded })
-      }
-    }
-    setTree(treeData)
-  }, [treeExpanded])
-
-  const renderItem = ({
-    item,
-    onExpand,
-    onCollapse,
-    provided,
-  }: RenderItemParams) => {
-    const selected: boolean = item.data?.menuId === treeSelected?.menuId
-
-    return (
-      <div
-        className={`${classes.item} ${selected ? classes.selected : ''}`}
-        ref={provided.innerRef}
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-      >
-        <DraaggableTreeMenuItem
-          item={item}
-          onExpand={onExpand}
-          onCollapse={onCollapse}
-          selected={selected}
-        />
-      </div>
+    if (expanded === 'none') return
+    setTree(
+      current =>
+        current && {
+          ...current,
+          items: Object.fromEntries(
+            Object.entries(current.items).map(([id, item]) => [
+              id,
+              { ...item, isExpanded: expanded === 'expand' },
+            ]),
+          ),
+        },
     )
-  }
+  }, [expanded])
 
-  const onExpand = (itemId: ItemId) => {
-    setTreeExpanded('none')
-    setTree(mutateTree(tree, itemId, { isExpanded: true }))
+  const rows = useMemo(() => visibleItems(tree, dragging), [tree, dragging])
+  const toggle = (id: ItemId, isExpanded: boolean) => {
+    setExpanded('none')
+    setTree(current => updateTreeItem(current, id, { isExpanded }))
   }
-
-  const onCollapse = (itemId: ItemId) => {
-    setTreeExpanded('none')
-    setTree(mutateTree(tree, itemId, { isExpanded: false }))
-  }
-
-  const onDragEnd = async (
-    source: TreeSourcePosition,
-    destination?: TreeDestinationPosition,
-  ) => {
-    if (!destination) {
-      return
+  const beforeDrag = ({ draggableId }: DragStart) => setDragging(draggableId)
+  const onDragEnd = ({ draggableId, destination, combine }: DropResult) => {
+    setDragging(undefined)
+    if (!destination && !combine) return
+    const source = rows.find(row => String(row.id) === draggableId)
+    if (!source) return
+    let target: TreeDestinationPosition
+    if (combine) {
+      // Combining nests the complete branch inside the target. The library
+      // provides both pointer and keyboard combine interactions.
+      const parent = tree.items[combine.draggableId]
+      target = { parentId: parent.id, index: parent.children.length }
+    } else {
+      const remaining = rows.filter(row => String(row.id) !== draggableId)
+      const next = remaining[destination.index]
+      const previous = remaining[destination.index - 1]
+      target = next
+        ? { parentId: next.parentId, index: next.index }
+        : previous
+          ? { parentId: previous.parentId, index: previous.index + 1 }
+          : { parentId: tree.rootId, index: 0 }
+      if (target.parentId === source.parentId && target.index > source.index)
+        target.index -= 1
     }
-
-    const newTree = moveItemOnTree(tree, source, destination)
-
-    const treeJson = new TreeJson(newTree, source, destination)
-    const convertTree = treeJson.convert()
-    handleTreeDnD(convertTree)
-
-    setTree(newTree)
+    // Descendants are hidden while dragging and cannot become a combine target.
+    let next = moveTreeItem(tree, source, target)
+    if (combine)
+      next = updateTreeItem(next, target.parentId, { isExpanded: true })
+    handleTreeDnD(new TreeJson(next, source, target).convert())
+    setTree(next)
   }
 
   return (
     <div className={classes.root}>
-      {tree && (
-        <Tree
-          tree={tree}
-          renderItem={renderItem}
-          onExpand={onExpand}
-          onCollapse={onCollapse}
-          onDragEnd={onDragEnd}
-          offsetPerLevel={PADDING_PER_LEVEL}
-          isDragEnabled
-          isNestingEnabled
-        />
-      )}
+      <DragDropContext onBeforeCapture={beforeDrag} onDragEnd={onDragEnd}>
+        <Droppable droppableId="menu-tree" isCombineEnabled>
+          {provided => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              role="tree"
+              aria-label="Menu hierarchy"
+            >
+              {rows.map((row, index) => {
+                const item = tree.items[row.id]
+                const active = item.data?.menuId === selected?.menuId
+                return (
+                  <Draggable
+                    key={String(row.id)}
+                    draggableId={String(row.id)}
+                    index={index}
+                  >
+                    {(drag, snapshot) => (
+                      <div
+                        ref={drag.innerRef}
+                        {...drag.draggableProps}
+                        {...drag.dragHandleProps}
+                        role="treeitem"
+                        aria-level={row.depth + 1}
+                        aria-expanded={
+                          item.children.length
+                            ? Boolean(item.isExpanded)
+                            : undefined
+                        }
+                        aria-selected={active}
+                        className={`${classes.item} ${active ? classes.selected : ''} ${snapshot.combineTargetFor ? classes.combine : ''}`}
+                        style={{
+                          ...drag.draggableProps.style,
+                          paddingLeft: row.depth * 40,
+                        }}
+                        onKeyDown={event => {
+                          // Do not intercept the library's keyboard drag controls.
+                          if (snapshot.isDragging) return
+                          if (event.key === 'ArrowRight') {
+                            event.preventDefault()
+                            toggle(item.id, true)
+                          }
+                          if (event.key === 'ArrowLeft') {
+                            event.preventDefault()
+                            toggle(item.id, false)
+                          }
+                        }}
+                      >
+                        <DraaggableTreeMenuItem
+                          item={item}
+                          onExpand={id => toggle(id, true)}
+                          onCollapse={id => toggle(id, false)}
+                          selected={active}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                )
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   )
 }

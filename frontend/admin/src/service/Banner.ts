@@ -46,7 +46,7 @@ export const bannerService = {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useSWR<Page, AxiosError>(
       [`${BANNER_URL}?size=${size}&page=${page}`, keywordType, keyword, siteId],
-      url => common.fetcher(url, { keywordType, keyword, siteId }),
+      ([url]) => common.fetcher(url, { keywordType, keyword, siteId }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   get: async (bannerNo: string) => axios.get(`${BANNER_URL}/${bannerNo}`),

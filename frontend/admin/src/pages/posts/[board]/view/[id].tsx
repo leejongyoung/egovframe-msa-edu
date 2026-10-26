@@ -2,11 +2,13 @@ import AttachList from '@components/AttachList'
 import { CustomButtons, IButtonProps } from '@components/Buttons'
 import { Comment } from '@components/comment'
 import { convertStringToDateFormat } from '@libs/date'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import CommentIcon from '@material-ui/icons/Comment'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import CommentIcon from '@mui/icons-material/Comment'
 import {
   BoardSavePayload,
   boardService,
@@ -23,7 +25,7 @@ import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { AxiosError } from 'axios'
 import classNames from 'classnames'
 import { GetServerSideProps } from 'next'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useSetRecoilState } from 'recoil'
@@ -313,7 +315,12 @@ const PostsItem = ({ boardNo, postsNo, board, initData }: IPostsItemsProps) => {
   return (
     <div className={classes.root}>
       <Grid container spacing={1}>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           <Box boxShadow={1} className={classes.content}>
             <Typography variant="h3">
               {(initData.noticeAt ? '[공지] ' : '') + initData.postsTitle}
@@ -345,12 +352,22 @@ const PostsItem = ({ boardNo, postsNo, board, initData }: IPostsItemsProps) => {
             </Box>
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           {board.uploadUseAt && attachData && (
             <AttachList data={attachData} setData={setAttachData} readonly />
           )}
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+          }}
+        >
           {(board.skinTypeCode === SKINT_TYPE_CODE_FAQ ||
             board.skinTypeCode === SKINT_TYPE_CODE_QNA) && (
             <Box boxShadow={1} className={classes.content}>
@@ -378,7 +395,12 @@ const PostsItem = ({ boardNo, postsNo, board, initData }: IPostsItemsProps) => {
         </Grid>
         {(board.skinTypeCode === SKINT_TYPE_CODE_FAQ ||
           board.skinTypeCode === SKINT_TYPE_CODE_QNA) && (
-          <Grid item xs={12} sm={12}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 12,
+            }}
+          >
             <Box boxShadow={1} className={classes.content}>
               <div
                 className={classNames({

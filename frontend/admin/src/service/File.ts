@@ -105,14 +105,25 @@ export const fileService = {
   },
   deleteAll: (attachmentCode: string) =>
     axios.delete(`${UPLOAD_API}/${attachmentCode}/children`),
-  download: (id: string) => { // 첨부파일 다운로드 - 삭제 파일 불가
-    axios.get(`${DOWNLOAD_API}/${id}`, {
-      responseType: 'blob',
-    })
-      .then(response =>{
-        const downloadFileName = decodeURIComponent(response.headers['content-disposition'].replace('attachment; filename*=UTF-8\'\'', ''))
+  download: (id: string) => {
+    // 첨부파일 다운로드 - 삭제 파일 불가
+    axios
+      .get(`${DOWNLOAD_API}/${id}`, {
+        responseType: 'blob',
+      })
+      .then(response => {
+        const downloadFileName = decodeURIComponent(
+          response.headers['content-disposition'].replace(
+            "attachment; filename*=UTF-8''",
+            '',
+          ),
+        )
 
-        const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }))
+        const url = window.URL.createObjectURL(
+          new Blob([response.data], {
+            type: String(response.headers['content-type']),
+          }),
+        )
         let link = document.createElement('a')
         link.href = url
         link.setAttribute('download', downloadFileName)

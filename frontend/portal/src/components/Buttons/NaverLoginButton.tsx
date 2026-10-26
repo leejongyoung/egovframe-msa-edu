@@ -2,7 +2,7 @@ import { ISocialButton } from '@components/Buttons/GoogleLoginButton'
 import CustomConfirm, { CustomConfirmPrpps } from '@components/CustomConfirm'
 import { NAVER_CALLBACK_URL, NAVER_CLIENT_ID } from '@constants/env'
 import useMounted from '@hooks/useMounted'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useCallback, useEffect, useState } from 'react'
 import { ExtendedWindow } from 'react-kakao-login/lib/types'
 

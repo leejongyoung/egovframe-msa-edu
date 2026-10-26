@@ -4,17 +4,15 @@ import Search, { IKeywordType } from '@components/Search'
 import CustomDataGrid from '@components/Table/CustomDataGrid'
 // 내부 컴포넌트 및 custom hook, etc...
 import { convertStringToDateFormat } from '@libs/date'
-import { Box } from '@material-ui/core'
-import Link from '@material-ui/core/Link'
+import { Box } from '@mui/material'
+import Link from '@mui/material/Link'
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import {
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
-import FiberNewIcon from '@material-ui/icons/FiberNew'
-import { ClassNameMap } from '@material-ui/styles'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
+import FiberNewIcon from '@mui/icons-material/FiberNew'
+import { ClassNameMap } from '@mui/styles'
 // api
 import {
   BoardSavePayload,
@@ -31,7 +29,8 @@ import { format, Page, rownum } from '@utils'
 import { AxiosError } from 'axios'
 import classNames from 'classnames'
 import { GetServerSideProps } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { TFunction } from 'i18next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 // 상태관리 recoil
@@ -81,8 +80,12 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 80,
     sortable: false,
-    valueGetter: (params: GridValueGetterParams) =>
-      rownum(data, params.api.getRowIndex(params.id), 'asc'),
+    valueGetter: (value, row, column, apiRef) =>
+      rownum(
+        data,
+        apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+        'asc',
+      ),
   },
   {
     field: 'postsTitle',
@@ -91,7 +94,7 @@ const getColumns: ColumnsType = (
     align: 'left',
     flex: 1,
     sortable: false,
-    renderCell: function renderCellPostsTitle(params: GridValueGetterParams) {
+    renderCell: function renderCellPostsTitle(params: GridRenderCellParams) {
       // eslint-disable-next-line no-param-reassign
       gridApiRef.current = params.api // api
       return (
@@ -140,12 +143,9 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 200,
     sortable: false,
-    valueFormatter: (params: GridValueFormatterParams) =>
-      params.value
-        ? convertStringToDateFormat(
-            params.value as string,
-            'yyyy-MM-dd HH:mm:ss',
-          )
+    valueFormatter: (value, row, column, apiRef) =>
+      value
+        ? convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss')
         : null,
   },
   {
@@ -171,9 +171,9 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 120,
     sortable: false,
-    valueGetter: (params: GridValueGetterParams) => {
-      if (params.value === 1) return '작성자'
-      if (params.value === 2) return '관리자'
+    valueGetter: (value, row, column, apiRef) => {
+      if (value === 1) return '작성자'
+      if (value === 2) return '관리자'
       return ''
     },
   },
@@ -501,17 +501,19 @@ const Posts = ({ board }: IBoardProps) => {
         conditionKey={conditionKey}
       />
       <CustomDataGrid
-        page={page}
         classes={classes}
         rows={data?.content}
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={board.postDisplayCount}
-        onPageChange={handlePageChange}
         getRowId={r => r.postsNo}
         checkboxSelection
-        disableSelectionOnClick
+        disableRowSelectionOnClick
+        paginationModel={{
+          page: page,
+          pageSize: board.postDisplayCount,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
       <CustomButtons
         buttons={[removeButton, restoreButton, deleteButton]}

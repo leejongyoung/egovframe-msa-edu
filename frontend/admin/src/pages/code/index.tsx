@@ -5,23 +5,22 @@ import CustomDataGrid from '@components/Table/CustomDataGrid'
 import { GRID_PAGE_SIZE } from '@constants'
 import usePage from '@hooks/usePage'
 import useSearchTypes from '@hooks/useSearchType'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 //api
 import { codeService } from '@service'
 import { conditionAtom, errorStateSelector } from '@stores'
 import { Page, rownum } from '@utils'
 import { AxiosError } from 'axios'
 import { NextPage } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { TFunction } from 'i18next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo } from 'react'
 // 상태관리 recoil
@@ -64,8 +63,12 @@ const getColumns: ColumnsType = (
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'desc'),
+      valueGetter: (value, row, column, apiRef) =>
+        rownum(
+          data,
+          apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+          'desc',
+        ),
     },
     {
       field: 'codeId',
@@ -88,7 +91,7 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 120,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Switch
           checked={Boolean(params.value)}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -112,12 +115,11 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 300,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <>
           <Box mr={1}>
             <Button
               variant="outlined"
-              color="default"
               size="small"
               onClick={() => routeCodeDetail(params.row.codeId)}
             >
@@ -269,10 +271,12 @@ const Code: NextPage = () => {
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        page={page}
-        onPageChange={handlePageChange}
         getRowId={r => r.codeId}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

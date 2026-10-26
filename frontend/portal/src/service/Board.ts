@@ -139,7 +139,7 @@ export const boardService = {
               keyword,
             ]
           : null,
-      url => common.fetcher(url, { keywordType, keyword }),
+      ([url]: [string, ...unknown[]]) => common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   getPostById: ({

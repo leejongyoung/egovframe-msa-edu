@@ -56,7 +56,7 @@ export const codeService = {
   search: ({ keywordType, keyword, size, page }: SearchPayload) => {
     return useSWR<Page, AxiosError>(
       [`${CODE_URL}?size=${size}&page=${page}`, keywordType, keyword],
-      (url, keywordType, keyword) =>
+      ([url, keywordType, keyword]) =>
         common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     )
@@ -75,7 +75,7 @@ export const codeService = {
         keywordType,
         keyword,
       ],
-      (url, parentCodeId, keywordType, keyword) =>
+      ([url, parentCodeId, keywordType, keyword]) =>
         common.fetcher(url, { parentCodeId, keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     )

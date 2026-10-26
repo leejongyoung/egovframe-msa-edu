@@ -2,8 +2,10 @@ import React from 'react'
 import { Controller, ControllerProps } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import { ControlledFieldProps } from '.'
 
 const useStyles = makeStyles((theme: Theme) =>

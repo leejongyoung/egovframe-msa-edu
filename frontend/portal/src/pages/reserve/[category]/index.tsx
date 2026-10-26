@@ -4,18 +4,16 @@ import DataGridTable from '@components/TableList/DataGridTable'
 import { DEFUALT_GRID_PAGE_SIZE, GRID_ROWS_PER_PAGE_OPTION } from '@constants'
 import usePage from '@hooks/usePage'
 import useSearchTypes from '@hooks/useSearchTypes'
-import Typography from '@material-ui/core/Typography'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueGetterParams,
-  MuiEvent,
-} from '@material-ui/data-grid'
+import Typography from '@mui/material/Typography'
+import { GridCellParams,
+GridColDef,
+GridRenderCellParams,
+MuiEvent, } from '@mui/x-data-grid'
 import { ICode, ILocation, Page, reserveService } from '@service'
 import { conditionAtom, conditionValue } from '@stores'
 import { rownum } from '@utils'
 import { GetServerSideProps } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { TFunction, useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { createRef, useMemo, useState } from 'react'
 import { useRecoilValue } from 'recoil'
@@ -30,8 +28,7 @@ const getColumns: ColumnsType = (data, t) => {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'desc'),
+      valueGetter: (_value, row, _column, apiRef) => rownum(data, apiRef.current.getRowIndexRelativeToVisibleRows(apiRef.current.getRowId(row)), 'desc'),
     },
     {
       field: 'locationName',
@@ -75,7 +72,7 @@ const getColumns: ColumnsType = (data, t) => {
         </>
       ),
     },
-  ]
+  ];
 }
 
 const getXsColumns: ColumnsType = (data, t) => {
@@ -92,7 +89,7 @@ const getXsColumns: ColumnsType = (data, t) => {
   function renderCell(params: GridCellParams) {
     return (
       <div>
-        <div className="title">{params.value}</div>
+        <div className="title">{String(params.value ?? '')}</div>
         <div className="sub">
           <p>{params.row.locationName}</p>
           <p>{params.row.categoryName}</p>
@@ -264,15 +261,16 @@ const Reserve = ({ locations, categories }: ReserveProps) => {
         rows={data?.content}
         xsColumns={xsColumns}
         getRowId={r => r.reserveItemId}
-        pageSize={pageSize}
         rowCount={data?.totalElements}
-        page={page}
-        onPageChange={handlePageChange}
         paginationMode="server"
         onCellClick={handleCellClick}
-      />
+        paginationModel={{
+          page: page,
+          pageSize: pageSize
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)} />
     </div>
-  )
+  );
 }
 
 export const getServerSideProps: GetServerSideProps = async context => {

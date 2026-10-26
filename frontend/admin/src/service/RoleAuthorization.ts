@@ -41,7 +41,7 @@ export const roleAuthorizationService = {
         keywordType,
         keyword,
       ],
-      url => common.fetcher(url, { roleId, keywordType, keyword }),
+      ([url]) => common.fetcher(url, { roleId, keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   save: async ({ callback, errorCallback, data }: RoleAuthorizationPayload) => {

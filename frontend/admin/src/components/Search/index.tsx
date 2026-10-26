@@ -1,12 +1,14 @@
 import React, { createRef, useEffect, useState } from 'react'
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-import IconButton from '@material-ui/core/IconButton'
-import SearchIcon from '@material-ui/icons/Search'
-import Fab from '@material-ui/core/Fab'
-import AddIcon from '@material-ui/icons/Add'
+import { Theme } from '@mui/material/styles'
+import makeStyles from '@mui/styles/makeStyles'
+import createStyles from '@mui/styles/createStyles'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import IconButton from '@mui/material/IconButton'
+import SearchIcon from '@mui/icons-material/Search'
+import Fab from '@mui/material/Fab'
+import AddIcon from '@mui/icons-material/Add'
 import { conditionAtom, conditionSelector, conditionValue } from '@stores'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -164,6 +166,7 @@ const Search = (props: ISearchProp) => {
             aria-label="search"
             color="primary"
             onClick={onClickSearch}
+            size="large"
           >
             <SearchIcon />
           </IconButton>

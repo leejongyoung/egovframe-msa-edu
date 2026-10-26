@@ -1,10 +1,12 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
-import ButtonGroup from '@material-ui/core/ButtonGroup'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import ExpandLessOutlinedIcon from '@material-ui/icons/ExpandLessOutlined'
-import ExpandMoreOutlinedIcon from '@material-ui/icons/ExpandMoreOutlined'
-import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined'
+import Button from '@mui/material/Button'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import { Theme } from '@mui/material/styles'
+import makeStyles from '@mui/styles/makeStyles'
+import createStyles from '@mui/styles/createStyles'
+import ExpandLessOutlinedIcon from '@mui/icons-material/ExpandLessOutlined'
+import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
+import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined'
 import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -1,6 +1,6 @@
-import { ItemId, TreeItem } from '@atlaskit/tree'
+import type { ItemId, TreeItem } from './TreeUtils'
 import { IMenuTree } from '@service'
-import produce from 'immer'
+import { produce } from 'immer'
 
 export type TreeItemType = TreeItem & {
   parentId?: number

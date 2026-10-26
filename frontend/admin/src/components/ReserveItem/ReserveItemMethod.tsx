@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useWatch } from 'react-hook-form'
 import { ICode, ReserveItemFormProps } from '@service'
 import {

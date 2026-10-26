@@ -1,5 +1,5 @@
 import { DEFAULT_ACCEPT_FILE_EXT } from '@constants'
-import Hidden from '@material-ui/core/Hidden'
+import Hidden from '@components/Hidden'
 import { IFile } from '@service'
 import React, { useContext, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -53,11 +53,11 @@ const FileUpload = (props: UploadProps) => {
         readOnly
         onClick={handleInputClick}
       />
-      <Hidden xsDown>
+      <Hidden smDown>
         <label htmlFor="file">{t('file.search')}</label>
       </Hidden>
     </div>
-  )
+  );
 }
 
 export default FileUpload

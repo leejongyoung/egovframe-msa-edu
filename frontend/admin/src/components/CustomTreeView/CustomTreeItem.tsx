@@ -1,9 +1,11 @@
 import { useTreeItemStyles } from '@components/DraggableTreeMenu/DraaggableTreeMenuItem'
-import Checkbox from '@material-ui/core/Checkbox'
-import Icon from '@material-ui/core/Icon'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem'
+import Checkbox from '@mui/material/Checkbox'
+import Icon from '@mui/material/Icon'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 const useStyles = makeStyles((theme: Theme) =>
@@ -53,6 +55,7 @@ const CustomTreeItem = (props: CustomTreeItemProps) => {
           className={`${itemClasses.labelRoot} ${
             checked ? itemClasses.selected : ''
           }`}
+          onClick={handleLabelClick}
         >
           {isChecked && (
             <Checkbox
@@ -71,7 +74,6 @@ const CustomTreeItem = (props: CustomTreeItemProps) => {
           </Typography>
         </div>
       }
-      onLabelClick={handleLabelClick}
       classes={{
         root: classes.root,
         label: itemClasses.label,
