@@ -1,7 +1,7 @@
 # eGovFrame Cloud Module Common
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-5.0.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Gradle](https://img.shields.io/badge/Gradle-8.x-blue.svg)](https://gradle.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
@@ -42,7 +42,7 @@ eGovFrame Cloud 마이크로서비스 아키텍처에서 여러 서비스에서 
 
 ### 핵심 기술
 - **Java 17**: 최신 LTS 버전
-- **Spring Boot 5.0.0**: 애플리케이션 프레임워크
+- **Spring Boot 3.5.6**: 애플리케이션 프레임워크
 - **Spring Cloud**: 마이크로서비스 지원
 - **Gradle**: 빌드 도구
 

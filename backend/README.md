@@ -7,7 +7,7 @@
 - `board-service/`: 게시판 서비스
 - `config/`: 공통 설정 파일
 - `discovery/`: 서비스 디스커버리
-- `module-common/`: 공통 모듈
+- `egovframe-cloud-module-common/`: 공통 모듈
 - `portal-service/`: 포탈 서비스
 - `reserve-check-service/`: 예약 확인 서비스
 - `reserve-item-service/`: 예약 품목 서비스

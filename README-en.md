@@ -18,7 +18,7 @@ This is the training source code for the Microservices Architecture (MSA) templa
 │  ├─board-service
 │  ├─config
 │  ├─discovery
-│  ├─module-common
+│  ├─egovframe-cloud-module-common
 │  ├─portal-service
 │  ├─reserve-check-service
 │  ├─reserve-item-service
@@ -37,10 +37,12 @@ This is the training source code for the Microservices Architecture (MSA) templa
 │  │      └─pipeline
 │  ├─mysql
 │  │  └─init
-│  └─opensearch
-│      └─logstash
-│          ├─config
-│          └─pipeline
+│  ├─opensearch
+│  │  └─logstash
+│  │      ├─config
+│  │      └─pipeline
+│  ├─rabbitmq
+│  └─zipkin
 ├─frontend
 │  ├─admin
 │  │  ├─public
@@ -124,6 +126,7 @@ This is the training source code for the Microservices Architecture (MSA) templa
 - `/backend/board-service`: Bulletin Board Service (Manage boards, posts, and attachments)
 - `/backend/config`: Provide environment-independent services by offering separate, unified configuration management services (service mesh)
 - `/backend/discovery`: Register and manage microservices and find and invoke them on demand (service mesh)
+- `/backend/egovframe-cloud-module-common`: Common module providing shared code and libraries for microservices
 - `/backend/user-service`: User services (login, sign up, forgot password, admin)
 - `/backend/portal-service`: Portal common services (menu, code, content, permissions, authorizations, banners, attachment management)
 - `/backend/reserve-check-service`: Reservation Confirmation Service (non-blocking)
@@ -142,7 +145,7 @@ This is the training source code for the Microservices Architecture (MSA) templa
 - `/k8s/environments/logging`: ELK-specific objects for Centralized Logging
 - `/k8s/environments/nfs`: NFS Node Volumes Configuration
 - `/k8s/environments/rabbitmq`: Message Broker-related objects
-- `/k8s/environments/storage`: PersistentVolumeClaim objects
+- `/k8s/storage`: PersistentVolumeClaim objects
 - `/k8s/environments/vagrant`: Vagrant-specific definitions that make it easy to configure the creation of a virtualized software development environment
 - `/k8s/environments/zipkin`: Zipkin-specific definitions for distributed transaction tracing
 
