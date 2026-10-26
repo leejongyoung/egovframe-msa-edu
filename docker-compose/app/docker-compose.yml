@@ -6,7 +6,7 @@ services:
       - "8888:8888"
     restart: always
     volumes:
-      - ${HOME}/workspace.edu/egovframe-msa-edu/config:/usr/app/config # volume bind
+      - ${CONFIG_DIR:-../../config}:/usr/app/config # volume bind
     environment:
       SPRING_PROFILES_ACTIVE: native
       ENCRYPT_KEY: token_secret
