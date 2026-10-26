@@ -1,17 +1,20 @@
+import { SelectChangeEvent } from '@mui/material/Select'
 import { DetailButtons } from '@components/Buttons/DetailButtons'
 import CustomTreeView, { CustomTreeViewType } from '@components/CustomTreeView'
 import TreeSubButtons from '@components/DraggableTreeMenu/TreeSubButtons'
 import { HorizontalTabs } from '@components/Tabs'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import ButtonGroup from '@material-ui/core/ButtonGroup'
-import MenuItem from '@material-ui/core/MenuItem'
-import Paper from '@material-ui/core/Paper'
-import Select from '@material-ui/core/Select'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Tab from '@material-ui/core/Tab'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import MenuItem from '@mui/material/MenuItem'
+import Paper from '@mui/material/Paper'
+import Select from '@mui/material/Select'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Tab from '@mui/material/Tab'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import { IRole, ISite, menuService, roleService } from '@service'
 import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { GetServerSideProps } from 'next'
@@ -96,7 +99,7 @@ const MenuRole = (props: MenuRoleProps) => {
     mutate(data, false)
   }
 
-  const handleSiteChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSiteChange = (event: SelectChangeEvent<unknown>) => {
     setSiteState(event.target.value as number)
   }
 

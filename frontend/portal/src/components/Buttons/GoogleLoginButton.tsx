@@ -1,76 +1,52 @@
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import GoogleLogin from 'react-google-login'
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
 import { GOOGLE_CLIENT_ID } from '@constants/env'
 import CustomConfirm, { CustomConfirmPrpps } from '@components/CustomConfirm'
 
 export interface ISocialButton {
-  handleClick?: (response: any) => void
+  handleClick?: (response: unknown) => void
   confirmMessage?: string
 }
 
-const GoogleLoginButton = (props: ISocialButton) => {
-  const { handleClick, confirmMessage } = props
-  const { t } = useTranslation()
-
-  const [customConfirm, setCustomConfirm] = useState<CustomConfirmPrpps>({
-    open: false,
-    handleConfirm: () => {},
-    handleCancel: () => {},
-  })
+const GoogleLoginButton = ({ handleClick, confirmMessage }: ISocialButton) => {
+  const { i18n } = useTranslation()
+  const [customConfirm, setCustomConfirm] = useState<CustomConfirmPrpps | null>(null)
 
   return (
     <>
-      <GoogleLogin
-        clientId={GOOGLE_CLIENT_ID}
-        render={(_props: any) => (
-          <a
-            href="#"
-            className="social google"
-            onClick={event => {
-              event.preventDefault()
-
-              if (confirmMessage) {
-                setCustomConfirm({
-                  open: true,
-                  contentText: confirmMessage,
-                  handleConfirm: () => {
-                    setCustomConfirm({
-                      open: false,
-                      handleConfirm: () => {},
-                      handleCancel: () => {},
-                    })
-
-                    _props.onClick(event)
-                  },
-                  handleCancel: () => {
-                    setCustomConfirm({
-                      open: false,
-                      handleConfirm: () => {},
-                      handleCancel: () => {},
-                    })
-                  },
-                } as CustomConfirmPrpps)
-              } else {
-                _props.onClick(event)
-              }
-            }}
-          >
-            {t('label.text.google')}
-          </a>
-        )}
-        onSuccess={handleClick}
-        onFailure={handleClick}
-        cookiePolicy="single_host_origin"
-      />
-      {customConfirm && (
-        <CustomConfirm
-          handleConfirm={customConfirm.handleConfirm}
-          handleCancel={customConfirm.handleCancel}
-          contentText={customConfirm.contentText}
-          open={customConfirm.open}
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} locale={i18n.language}>
+        <GoogleLogin
+          onSuccess={({ credential }) => {
+            if (!credential) {
+              handleClick?.({ error: 'missing_credential' })
+              return
+            }
+            // Only identify the selected account here; the backend verifies the ID token.
+            const payload: unknown = JSON.parse(atob(credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+            if (!payload || typeof payload !== 'object' || !('sub' in payload) || typeof payload.sub !== 'string') {
+              handleClick?.({ error: 'invalid_credential' })
+              return
+            }
+            const response = { tokenId: credential, googleId: payload.sub }
+            if (confirmMessage) {
+              setCustomConfirm({
+                open: true,
+                contentText: confirmMessage,
+                handleConfirm: () => {
+                  setCustomConfirm(null)
+                  handleClick?.(response)
+                },
+                handleCancel: () => setCustomConfirm(null),
+              })
+            } else {
+              handleClick?.(response)
+            }
+          }}
+          onError={() => handleClick?.({ error: 'google_login_failed' })}
         />
-      )}
+      </GoogleOAuthProvider>
+      {customConfirm && <CustomConfirm {...customConfirm} />}
     </>
   )
 }

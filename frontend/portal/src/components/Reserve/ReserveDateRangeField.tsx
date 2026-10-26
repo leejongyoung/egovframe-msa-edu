@@ -1,6 +1,6 @@
 import ValidationAlert from '@components/ValidationAlert'
 import { defaultlocales } from '@libs/date'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import React, { useState } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'

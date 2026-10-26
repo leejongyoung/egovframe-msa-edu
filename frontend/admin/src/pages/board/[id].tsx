@@ -1,15 +1,17 @@
 import { DetailButtons } from '@components/Buttons'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
-import Box from '@material-ui/core/Box'
-import FormControl from '@material-ui/core/FormControl'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Grid from '@material-ui/core/Grid'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import TextField from '@material-ui/core/TextField'
+import Box from '@mui/material/Box'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Grid from '@mui/material/Grid'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
 import {
   BoardSavePayload,
   boardService,
@@ -21,7 +23,7 @@ import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
 import { format } from '@utils'
 import { AxiosError } from 'axios'
 import { GetServerSideProps } from 'next'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -203,7 +205,12 @@ const BoardItem = ({
     <div className={classes.root}>
       <FormProvider {...methods}>
         <Grid container spacing={1}>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1}>
               <Controller
                 name="boardName"
@@ -236,7 +243,12 @@ const BoardItem = ({
               )}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id="skinTypeCode-label" required>
                 {t('board.skin_type_code')}
@@ -267,7 +279,12 @@ const BoardItem = ({
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1}>
               <Controller
                 name="titleDisplayLength"
@@ -298,7 +315,12 @@ const BoardItem = ({
               )}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1}>
               <Controller
                 name="postDisplayCount"
@@ -330,7 +352,12 @@ const BoardItem = ({
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1}>
               <Controller
                 name="pageDisplayCount"
@@ -361,7 +388,12 @@ const BoardItem = ({
               )}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1}>
               <Controller
                 name="newDisplayDayCount"
@@ -393,7 +425,12 @@ const BoardItem = ({
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1} className={classes.switchBox}>
               <FormControlLabel
                 label={t('board.editor_use_at')}
@@ -410,7 +447,12 @@ const BoardItem = ({
               />
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1} className={classes.switchBox}>
               <FormControlLabel
                 label={t('board.user_write_at')}
@@ -428,7 +470,12 @@ const BoardItem = ({
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1} className={classes.switchBox}>
               <FormControlLabel
                 label={t('board.upload_use_at')}
@@ -451,7 +498,12 @@ const BoardItem = ({
               />
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1} className={classes.switchBox}>
               <FormControlLabel
                 label={t('board.comment_use_at')}
@@ -469,7 +521,13 @@ const BoardItem = ({
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6} hidden={!uploadUseAt}>
+          <Grid
+            hidden={!uploadUseAt}
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1}>
               <Controller
                 name="uploadLimitCount"
@@ -499,7 +557,13 @@ const BoardItem = ({
               )}
             </Box>
           </Grid>
-          <Grid item xs={12} sm={6} hidden={!uploadUseAt}>
+          <Grid
+            hidden={!uploadUseAt}
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <Box boxShadow={1}>
               <Controller
                 name="uploadLimitSize"

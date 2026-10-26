@@ -1,16 +1,18 @@
-import { Typography } from '@material-ui/core'
-import Button, { ButtonProps } from '@material-ui/core/Button'
-import Dialog, { DialogProps } from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined'
-import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined'
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined'
-import { Color } from '@material-ui/lab/Alert'
+import { Typography } from '@mui/material'
+import Button, { ButtonProps } from '@mui/material/Button'
+import Dialog, { DialogProps } from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined'
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined'
+import { AlertColor } from '@mui/material/Alert'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -27,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface CustomAlertPrpps extends DialogProps {
   title?: string
-  severity?: Color
+  severity?: AlertColor
   contentText?: string | string[]
   handleAlert: () => void
   buttonText?: string
@@ -69,7 +71,7 @@ const CustomAlert = (props: CustomAlertPrpps) => {
       aria-describedby="alert-dialog-description"
       {...rest}
     >
-      <DialogTitle id="alert-dialog-title" disableTypography={true}>
+      <DialogTitle id="alert-dialog-title">
         <Typography variant="h5">
           {icon()} {title || t('common.noti')}
         </Typography>
@@ -104,7 +106,7 @@ const CustomAlert = (props: CustomAlertPrpps) => {
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }
 
 export default CustomAlert

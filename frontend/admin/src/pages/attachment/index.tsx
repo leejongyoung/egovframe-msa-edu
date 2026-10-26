@@ -5,21 +5,18 @@ import { GRID_PAGE_SIZE } from '@constants'
 import usePage from '@hooks/usePage'
 import useSearchTypes from '@hooks/useSearchType'
 import { convertStringToDateFormat } from '@libs/date'
-import Link from '@material-ui/core/Link'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import Typography from '@material-ui/core/Typography'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import Link from '@mui/material/Link'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 import { attachmentService, fileService } from '@service'
 import { conditionAtom, errorStateSelector } from '@stores'
 import { formatBytes, Page, rownum } from '@utils'
 import { AxiosError } from 'axios'
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'i18next'
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
@@ -63,10 +60,10 @@ const getColumns: ColumnType = (
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) => {
+      valueGetter: (value, row, column, apiRef) => {
         return rownum(
           data,
-          data?.content.findIndex(v => v.id === params.id),
+          data?.content.findIndex(v => v.id === row.id),
           'desc',
         )
       },
@@ -94,13 +91,13 @@ const getColumns: ColumnType = (
       align: 'left',
       width: 150,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Typography>
           <Link
             href={`${fileService.downloadUrl}/${params.row.id}`}
             download={params.value}
             variant="body2"
-            onClick={(event) => {
+            onClick={event => {
               event.preventDefault()
               attachmentService.download(params.row.id)
             }}
@@ -117,8 +114,8 @@ const getColumns: ColumnType = (
       align: 'right',
       width: 100,
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) => {
-        return formatBytes(params.value as number)
+      valueFormatter: (value, row, column, apiRef) => {
+        return formatBytes(value as number)
       },
     },
     {
@@ -136,11 +133,8 @@ const getColumns: ColumnType = (
       align: 'center',
       width: 120,
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) => {
-        return convertStringToDateFormat(
-          params.value as string,
-          'yyyy-MM-dd HH:mm',
-        )
+      valueFormatter: (value, row, column, apiRef) => {
+        return convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm')
       },
     },
     {
@@ -150,7 +144,7 @@ const getColumns: ColumnType = (
       align: 'center',
       width: 120,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Switch
           checked={Boolean(params.value)}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -166,7 +160,7 @@ const getColumns: ColumnType = (
       align: 'center',
       width: 200,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <GridButtons
           id={params.value as string}
           handleDelete={(id: string) => handleDelete(id)}
@@ -267,9 +261,11 @@ const Attachment = () => {
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        page={page}
-        onPageChange={handlePageChange}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

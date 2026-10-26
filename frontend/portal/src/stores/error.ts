@@ -39,9 +39,20 @@ export const errorStateSelector = selector<IErrorProps>({
       let errors: IErrors[] = []
       let status = newValue.status || 500
       if (error?.response) {
-        message = error.response.data.message || message
-
-        errors = error.response.data.errors
+        const data = error.response.data
+        if (data && typeof data === 'object') {
+          if ('message' in data && typeof data.message === 'string') {
+            message = data.message || message
+          }
+          if ('errors' in data && Array.isArray(data.errors)) {
+            errors = data.errors.filter(
+              (item): item is IErrors =>
+                item && typeof item === 'object' &&
+                typeof item.defaultMessage === 'string' &&
+                typeof item.field === 'string',
+            )
+          }
+        }
         status = error.response.status
       }
 

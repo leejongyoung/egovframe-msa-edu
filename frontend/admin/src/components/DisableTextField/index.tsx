@@ -1,7 +1,9 @@
-import Grid, { GridProps } from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import Grid, { GridProps } from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
 import React from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,12 +36,12 @@ const DisableTextField = ({
   const classes = useStyles()
   return (
     <Grid container spacing={1}>
-      <Grid item xs={4} {...labelProps}>
+      <Grid size={4} {...labelProps}>
         <Paper className={classes.label}>
           <Typography variant="body1">{label}</Typography>
         </Paper>
       </Grid>
-      <Grid item xs={8} {...valueProps}>
+      <Grid size={8} {...valueProps}>
         <Paper className={classes.text}>
           {typeof value === 'string' || typeof value === 'number' ? (
             <Typography variant="body1">{value}</Typography>

@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { FieldError } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import Alert, { AlertProps } from '@material-ui/lab/Alert'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import Alert, { AlertProps } from '@mui/material/Alert'
+import { Theme } from '@mui/material/styles';
+
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 import { format } from '@utils'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      padding: `0px ${theme.spacing(1)}px`,
+      padding: `0px ${theme.spacing(1)}`,
     },
   }),
 )

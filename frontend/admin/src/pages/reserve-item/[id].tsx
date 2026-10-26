@@ -4,7 +4,9 @@ import {
   ReserveItemBasic,
   ReserveItemManager,
 } from '@components/ReserveItem'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import {
   ICode,
   ILocation,
@@ -13,9 +15,9 @@ import {
   reserveItemService,
 } from '@service'
 import { detailButtonsSnackAtom, errorStateSelector } from '@stores'
-import produce from 'immer'
+import { produce } from 'immer'
 import { GetServerSideProps } from 'next'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'

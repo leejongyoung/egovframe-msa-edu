@@ -1,8 +1,10 @@
+import { SelectChangeEvent } from '@mui/material/Select'
+import type { TooltipContentProps } from 'recharts'
 import CustomBarChart from '@components/CustomBarChart'
 import { format as dateFormat, getCurrentDate } from '@libs/date'
-import { Card, CardContent, Typography } from '@material-ui/core'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
+import { Card, CardContent, Typography } from '@mui/material'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 import { DailyPayload, ISite, statisticsService } from '@service'
 import { GetServerSideProps } from 'next'
 import React, { useState } from 'react'
@@ -36,7 +38,7 @@ function Statistics(props: StatisticsProps) {
   const { monthly } = statisticsService.getMonthly(siteState)
   const { daily } = statisticsService.getDaily(siteState, dailyPayload)
 
-  const handleSiteChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSiteChange = (event: SelectChangeEvent<unknown>) => {
     setSiteState(event.target.value as number)
     setDailyPayload(initDailyPayload)
   }
@@ -50,7 +52,11 @@ function Statistics(props: StatisticsProps) {
     }
   }
 
-  const monthlyTooltipContent = ({ active, payload, label }) => {
+  const monthlyTooltipContent = ({
+    active,
+    payload,
+    label,
+  }: TooltipContentProps<number | string, number | string>) => {
     if (!active || !payload || !label) return null
 
     return tooltipContent(
@@ -58,7 +64,11 @@ function Statistics(props: StatisticsProps) {
     )
   }
 
-  const dailyTooltipContent = ({ active, payload, label }) => {
+  const dailyTooltipContent = ({
+    active,
+    payload,
+    label,
+  }: TooltipContentProps<number | string, number | string>) => {
     if (!active || !payload || !label) return null
 
     return tooltipContent(

@@ -1,18 +1,16 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { NextPage } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { TFunction } from 'i18next'
 
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
-import Box from '@material-ui/core/Box'
-import { Button } from '@material-ui/core'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
+import Box from '@mui/material/Box'
+import { Button } from '@mui/material'
 
 // 내부 컴포넌트 및 custom hook, etc...
 import { convertStringToDateFormat } from '@libs/date'
@@ -67,8 +65,12 @@ const getColumns: ColumnsType = (data, handleManageRole, t) => [
     headerAlign: 'center',
     align: 'center',
     sortable: false,
-    valueGetter: (params: GridValueGetterParams) =>
-      rownum(data, params.api.getRowIndex(params.id), 'asc'),
+    valueGetter: (value, row, column, apiRef) =>
+      rownum(
+        data,
+        apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+        'asc',
+      ),
   },
   {
     field: 'roleId',
@@ -100,8 +102,8 @@ const getColumns: ColumnsType = (data, handleManageRole, t) => [
     align: 'center',
     width: 200,
     sortable: false,
-    valueFormatter: (params: GridValueFormatterParams) =>
-      convertStringToDateFormat(params.value as string, 'yyyy-MM-dd HH:mm:ss'),
+    valueFormatter: (value, row, column, apiRef) =>
+      convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss'),
   },
   {
     field: 'buttons',
@@ -110,7 +112,7 @@ const getColumns: ColumnsType = (data, handleManageRole, t) => [
     align: 'center',
     width: 150,
     sortable: false,
-    renderCell: function renderCellButtons(params: GridCellParams) {
+    renderCell: function renderCellButtons(params: GridRenderCellParams) {
       return (
         <div>
           <Box>
@@ -218,15 +220,17 @@ const Role: NextPage<any> = () => {
         conditionKey={conditionKey}
       />
       <CustomDataGrid
-        page={page}
         classes={classes}
         rows={data?.content}
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        onPageChange={handlePageChange}
         getRowId={r => r.roleId}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

@@ -1,8 +1,8 @@
 import ActiveLink from '@components/ActiveLink'
-import Hidden from '@material-ui/core/Hidden'
-import IconButton from '@material-ui/core/IconButton'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
+import Hidden from '@components/Hidden'
+import IconButton from '@mui/material/IconButton'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { currentMenuStateAtom, ISideMenu, menuStateAtom } from '@stores'
 import { translateToLang } from '@utils'
 import React, { useCallback, useState } from 'react'
@@ -108,7 +108,7 @@ const Sitemap = () => {
                             onClick={e =>
                               handleChevronClick(e, item, isActive(item.id))
                             }
-                          >
+                            size="large">
                             {isActive(item.id) ? (
                               <KeyboardArrowUpIcon />
                             ) : (
@@ -121,17 +121,17 @@ const Sitemap = () => {
                           ? renderSitemap(item, i18n.language, currentMenu)
                           : null}
                       </Hidden>
-                      <Hidden xsDown>
+                      <Hidden smDown>
                         {renderSitemap(item, i18n.language, currentMenu)}
                       </Hidden>
                     </li>
                   </ul>
-                )
+                );
               })}
         </div>
       </nav>
     </>
-  )
+  );
 }
 
 export default Sitemap

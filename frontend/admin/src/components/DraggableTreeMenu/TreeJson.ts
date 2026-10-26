@@ -4,9 +4,9 @@ import {
   TreeDestinationPosition,
   TreeItem,
   TreeSourcePosition,
-} from '@atlaskit/tree'
+} from './TreeUtils'
 import { IMenuTree } from '@service'
-import produce from 'immer'
+import { produce } from 'immer'
 
 export class TreeJson {
   private readonly treeJson: IMenuTree[]
@@ -36,8 +36,12 @@ export class TreeJson {
       return this.treeJson
     }
 
-    this.update(this.source.parentId)
-    this.update(this.destination.parentId)
+    if (this.source.parentId === '0' || this.destination.parentId === '0') {
+      this.updateTopLevel()
+    }
+    if (this.source.parentId !== '0') this.update(this.source.parentId)
+    if (this.destination.parentId !== '0')
+      this.update(this.destination.parentId)
 
     return this.treeJson
   }

@@ -6,22 +6,20 @@ import { GRID_PAGE_SIZE } from '@constants'
 import usePage from '@hooks/usePage'
 // 내부 컴포넌트 및 custom hook, etc...
 import { convertStringToDateFormat } from '@libs/date'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 // api
 import { contentService } from '@service'
 import { conditionAtom, errorStateSelector } from '@stores'
 import { Page, rownum } from '@utils'
 import { AxiosError } from 'axios'
 import { NextPage } from 'next'
-import { TFunction, useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
+import { TFunction } from 'i18next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo } from 'react'
 // 상태관리 recoil
@@ -62,8 +60,12 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 80,
     sortable: false,
-    valueGetter: (params: GridValueGetterParams) =>
-      rownum(data, params.api.getRowIndex(params.id), 'asc'),
+    valueGetter: (value, row, column, apiRef) =>
+      rownum(
+        data,
+        apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+        'asc',
+      ),
   },
   {
     field: 'contentName',
@@ -88,8 +90,8 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 200,
     sortable: false,
-    valueFormatter: (params: GridValueFormatterParams) =>
-      convertStringToDateFormat(params.value as string, 'yyyy-MM-dd HH:mm:ss'),
+    valueFormatter: (value, row, column, apiRef) =>
+      convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss'),
   },
   {
     field: 'buttons',
@@ -98,7 +100,7 @@ const getColumns: ColumnsType = (
     align: 'center',
     width: 150,
     sortable: false,
-    renderCell: function renderCellButtons(params: GridCellParams) {
+    renderCell: function renderCellButtons(params: GridRenderCellParams) {
       return handlePopup ? (
         <Button
           onClick={() => {
@@ -225,15 +227,17 @@ const Content: NextPage<ContentProps> = props => {
         conditionKey={conditionKey}
       />
       <CustomDataGrid
-        page={page}
         classes={classes}
         rows={data?.content}
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        onPageChange={handlePageChange}
         getRowId={r => r.contentNo}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

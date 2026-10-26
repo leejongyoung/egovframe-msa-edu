@@ -1,4 +1,4 @@
-import { Hidden } from '@material-ui/core'
+import Hidden from '@components/Hidden'
 import { currentMenuStateAtom, flatMenusSelect } from '@stores'
 import { translateToLang } from '@utils'
 import React, { useEffect, useState } from 'react'
@@ -45,7 +45,7 @@ const Body = (props: BodyProps) => {
   return (
     <div id="container">
       <div>
-        <Hidden smDown>
+        <Hidden mdDown>
           <SideBar />
         </Hidden>
         <section>
@@ -61,7 +61,7 @@ const Body = (props: BodyProps) => {
         </section>
       </div>
     </div>
-  )
+  );
 }
 
 export default Body

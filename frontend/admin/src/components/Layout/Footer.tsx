@@ -1,7 +1,8 @@
 import React from 'react'
-import Typography from '@material-ui/core/Typography'
-import Container from '@material-ui/core/Container'
-import { makeStyles, Theme } from '@material-ui/core/styles'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import { Theme } from '@mui/material/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import Copyright from '@components/Copyright'
 
 const useStyles = makeStyles((theme: Theme) => ({

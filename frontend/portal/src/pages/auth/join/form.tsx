@@ -1,7 +1,8 @@
 import CustomAlert, { CustomAlertPrpps } from '@components/CustomAlert'
 import { DLWrapper } from '@components/WriteDLFields'
-import { makeStyles, Theme } from '@material-ui/core/styles'
-import Alert from '@material-ui/lab/Alert'
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert'
 import { ISocialUser, userService } from '@service'
 import { EMAIL_PATTERN, format, isValidEmail, isValidPassword } from '@utils'
 import { GetServerSideProps } from 'next'

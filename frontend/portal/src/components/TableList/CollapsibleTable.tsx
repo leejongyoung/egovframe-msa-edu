@@ -1,38 +1,44 @@
-import Paper from '@material-ui/core/Paper'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import withWidth, { WithWidthProps } from '@material-ui/core/withWidth'
-import {
-  GridColDef,
-  GridRowData,
-  GridRowId,
-  GridRowsProp,
-} from '@material-ui/data-grid'
+import Paper from '@mui/material/Paper'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import { GridColDef,
+GridRowModel,
+GridRowId,
+GridRowsProp, } from '@mui/x-data-grid'
 import React from 'react'
 import CollapseRow from './CollapseRow'
 import CustomPagination from './CustomPagination'
 
-export interface CollapseColDef
-  extends Omit<
-    GridColDef,
-    | 'sortComparator'
-    | 'valueGetter'
-    | 'valueParser'
-    | 'renderEditCell'
-    | 'renderHeader'
-  > {}
+import useWidth from '@hooks/useWidth'
 
-interface CollapsibleTableProps extends WithWidthProps {
+export interface CollapseCellParams {
+  id: GridRowId
+  field: string
+  row: GridRowModel
+  value: React.ReactNode
+}
+
+export type CollapseColDef = Pick<
+  GridColDef,
+  'field' | 'headerName' | 'headerAlign' | 'align' | 'width' | 'minWidth' | 'sortable'
+> & {
+  cellClassName?: string
+  headerClassName?: string
+  renderCell?: (params: CollapseCellParams) => React.ReactNode
+  valueFormatter?: (value: React.ReactNode) => React.ReactNode
+}
+
+interface CollapsibleTableProps {
   hideColumns?: boolean
   columns: CollapseColDef[]
   xsColumns: CollapseColDef[]
   rows: GridRowsProp
   rowId?: GridRowId
-  renderCollapseRow: (row: GridRowData) => React.ReactNode
+  renderCollapseRow: (row: GridRowModel) => React.ReactNode
   page: number
   first: boolean
   last: boolean
@@ -45,7 +51,6 @@ interface CollapsibleTableProps extends WithWidthProps {
 
 const CollapsibleTable = (props: CollapsibleTableProps) => {
   const {
-    width,
     hideColumns = false,
     columns,
     xsColumns,
@@ -58,6 +63,7 @@ const CollapsibleTable = (props: CollapsibleTableProps) => {
     totalPages,
     handleChangePage,
   } = props
+  const width = useWidth()
 
   return (
     <TableContainer className="collapsible" component={Paper}>
@@ -117,4 +123,4 @@ const CollapsibleTable = (props: CollapsibleTableProps) => {
   )
 }
 
-export default withWidth()(CollapsibleTable)
+export default CollapsibleTable

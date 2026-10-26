@@ -36,7 +36,7 @@ export const authorizationService = {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useSWR<Page, AxiosError>(
       [`${AUTHORIZATION_URL}?size=${size}&page=${page}`, keywordType, keyword],
-      url => common.fetcher(url, { keywordType, keyword }),
+      ([url]) => common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   get: async (authorizationNo: string) =>

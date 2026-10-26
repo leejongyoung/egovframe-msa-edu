@@ -1,6 +1,6 @@
 import { TZ } from '@constants/env'
 import { format as fnsFormat, Locale } from 'date-fns'
-import { utcToZonedTime } from 'date-fns-tz'
+import { toZonedTime } from 'date-fns-tz'
 import { ko, enUS } from 'date-fns/locale'
 
 type DateType = number | Date
@@ -21,14 +21,14 @@ export const format = (date: DateType, formatStr = 'PP') => {
 }
 
 export const getCurrentDate = (timezone?: string) => {
-  return utcToZonedTime(Date.now(), timezone || TZ)
+  return toZonedTime(Date.now(), timezone || TZ)
 }
 
 export const convertStringToDate = (
   date: string | Date,
   timezone: string = TZ,
 ) => {
-  return utcToZonedTime(new Date(date), timezone)
+  return toZonedTime(new Date(date), timezone)
 }
 
 export const convertStringToDateFormat = (

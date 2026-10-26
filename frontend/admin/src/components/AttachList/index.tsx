@@ -1,9 +1,11 @@
-import Chip from '@material-ui/core/Chip'
-import Paper from '@material-ui/core/Paper'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import AssignmentReturnedIcon from '@material-ui/icons/AssignmentReturned'
+import Chip from '@mui/material/Chip'
+import Paper from '@mui/material/Paper'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import AssignmentReturnedIcon from '@mui/icons-material/AssignmentReturned'
 import { fileService, IAttachmentResponse } from '@service'
-import produce from 'immer'
+import { produce } from 'immer'
 import React from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>

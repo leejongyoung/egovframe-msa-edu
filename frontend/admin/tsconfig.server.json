@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json", // 기본설정을 포함한다
   "compilerOptions": {
     "module": "commonjs", // commonJs 사용하도록 override
+    "moduleResolution": "node",
     "outDir": "dist", // 빌드 파일 경로 (production mode)
     "noEmit": false // 서버에 대한 결과 파일을 내보내지 않음 (production mode)
   },

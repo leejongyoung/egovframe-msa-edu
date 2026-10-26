@@ -1,18 +1,20 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import clsx from 'clsx'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Drawer from '@material-ui/core/Drawer'
-import Divider from '@material-ui/core/Divider'
-import IconButton from '@material-ui/core/IconButton'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import Link from '@material-ui/core/Link'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Drawer from '@mui/material/Drawer'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import Link from '@mui/material/Link'
 
 import { DRAWER_WIDTH } from '@constants'
 import { Menu } from '@components/Menu'
-import { Typography } from '@material-ui/core'
+import { Typography } from '@mui/material'
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles<Theme>((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
@@ -38,9 +40,9 @@ const useStyles = makeStyles((theme: Theme) =>
         duration: theme.transitions.duration.leavingScreen,
       }),
       overflowX: 'hidden',
-      width: theme.spacing(7) + 1,
+      width: `calc(${theme.spacing(7)} + 1px)`,
       [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9) + 1,
+        width: `calc(${theme.spacing(9)} + 1px)`,
       },
     },
     drawerHeader: {
@@ -130,7 +132,7 @@ const SideBar = (props: ISideBarProps) => {
             </Link>
           </div>
         )}
-        <IconButton onClick={onClick}>
+        <IconButton onClick={onClick} size="large">
           <ChevronLeftIcon />
         </IconButton>
       </div>

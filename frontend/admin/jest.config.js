@@ -1,11 +1,14 @@
-module.exports = {
+const nextJest = require('next/jest')
+const { compilerOptions } = require('./tsconfig.json')
+const moduleNameMapper = Object.fromEntries(
+  Object.entries(compilerOptions.paths).map(([alias, [target]]) => [
+    '^' + alias.replace('*', '(.*)') + '$',
+    '<rootDir>/' + target.replace('*', '$1'),
+  ]),
+)
+module.exports = nextJest({ dir: './' })({
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
   setupFilesAfterEnv: ['./jest.setup.ts'],
-  moduleNameMapper: {
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/test/mocks.ts',
-    '\\.(css|less|scss|html)$': '<rootDir>/test/mocks.ts',
-    //절대 경로 세팅한 경우 jest에도 세팅이 필요함
-    '^@components(.*)$': '<rootDir>/components$1',
-  },
-}
+  moduleNameMapper,
+})

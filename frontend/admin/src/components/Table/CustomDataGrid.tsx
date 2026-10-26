@@ -3,8 +3,10 @@ import {
   GRID_ROWS_PER_PAGE_OPTION,
   GRID_ROW_HEIGHT,
 } from '@constants'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { DataGrid, DataGridProps } from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import { DataGrid, DataGridProps } from '@mui/x-data-grid'
 import * as React from 'react'
 import DataGridPagination from './DataGridPagination'
 
@@ -22,8 +24,14 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export default function CustomDataGrid(props: IDataGridProps) {
-  const { columns, rows, pageSize, rowsPerPageOptions, rowHeight, getRowId } =
-    props
+  const {
+    columns,
+    rows,
+    paginationModel,
+    pageSizeOptions,
+    rowHeight,
+    getRowId,
+  } = props
   const classes = useStyles()
   return (
     <div className={classes.root}>
@@ -32,11 +40,16 @@ export default function CustomDataGrid(props: IDataGridProps) {
         rows={rows || []}
         columns={columns}
         rowHeight={rowHeight || GRID_ROW_HEIGHT}
-        pageSize={pageSize || GRID_PAGE_SIZE}
-        rowsPerPageOptions={rowsPerPageOptions || GRID_ROWS_PER_PAGE_OPTION}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: GRID_PAGE_SIZE },
+          },
+        }}
+        paginationModel={paginationModel}
+        pageSizeOptions={pageSizeOptions || GRID_ROWS_PER_PAGE_OPTION}
         autoHeight
         pagination
-        components={{ Pagination: DataGridPagination }}
+        slots={{ pagination: DataGridPagination }}
         getRowId={getRowId || (r => r.id)}
       />
     </div>

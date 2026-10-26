@@ -1,20 +1,11 @@
 import React from 'react'
-import 'swiper/components/pagination/pagination.min.css'
-import SwiperCore, { Autoplay, Pagination } from 'swiper/core'
-import { Swiper } from 'swiper/react'
-// Import Swiper styles
-import 'swiper/swiper.min.css'
+import { Autoplay, Pagination } from 'swiper/modules'
+import { Swiper, SwiperProps } from 'swiper/react'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
-// install Swiper modules
-SwiperCore.use([Pagination, Autoplay])
-
-interface CustomSwiperProps extends Swiper {
-  children: React.ReactNode[]
-}
-
-const CustomSwiper = (props: CustomSwiperProps) => {
-  const { children, ...rest } = props
-  return <Swiper {...rest}>{children && children.map(item => item)}</Swiper>
-}
+const CustomSwiper = ({ children, ...rest }: SwiperProps) => (
+  <Swiper modules={[Pagination, Autoplay]} {...rest}>{children}</Swiper>
+)
 
 export default CustomSwiper

@@ -130,7 +130,7 @@ export const reserveItemService = {
         isUse,
         isPopup,
       ],
-      url =>
+      ([url]) =>
         common.fetcher(url, {
           keywordType,
           keyword,

@@ -74,7 +74,7 @@ export const reserveService = {
         locationId,
         categoryId,
       ],
-      url => common.fetcher(url, { keywordType, keyword }),
+      ([url]) => common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   get: (reserveId: string) =>

@@ -1,11 +1,13 @@
 import React from 'react'
 import { Controller, ControllerProps } from 'react-hook-form'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Box from '@material-ui/core/Box'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Box from '@mui/material/Box'
 import FormControlLabel, {
   FormControlLabelProps,
-} from '@material-ui/core/FormControlLabel'
-import Switch from '@material-ui/core/Switch'
+} from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
 import { ControlledFieldProps } from '.'
 

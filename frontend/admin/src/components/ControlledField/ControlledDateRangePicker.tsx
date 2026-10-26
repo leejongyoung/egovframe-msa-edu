@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
-import { Box } from '@material-ui/core'
+import DatePicker, { DatePickerProps } from 'react-datepicker'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import TextField from '@mui/material/TextField'
+import { Box } from '@mui/material'
 import { Controller, ControllerProps } from 'react-hook-form'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
 import { convertStringToDate, defaultlocales } from '@libs/date'
@@ -28,7 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface CustomDataPickerProps extends Omit<ReactDatePickerProps, 'onChange'> {
+type WithoutOnChange<T> = T extends unknown ? Omit<T, 'onChange'> : never
+type CustomDataPickerProps = WithoutOnChange<
+  Extract<
+    DatePickerProps,
+    {
+      selectsRange?: false
+      selectsMultiple?: false
+    }
+  >
+> & {
   name: any
   label: string
   contollerProps?: Omit<
@@ -102,6 +113,8 @@ const ControlledDateRangePicker = (props: ControlledDateRangePickerProps) => {
               dateFormat={format}
               locale={defaultlocales[i18n.language]}
               {...startProps}
+              selectsRange={false}
+              selectsMultiple={false}
             />
           )}
           {...startProps.contollerProps}
@@ -140,6 +153,8 @@ const ControlledDateRangePicker = (props: ControlledDateRangePickerProps) => {
               dateFormat={format}
               locale={defaultlocales[i18n.language]}
               {...endProps}
+              selectsRange={false}
+              selectsMultiple={false}
             />
           )}
           {...endProps.contollerProps}

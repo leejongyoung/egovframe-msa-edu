@@ -50,7 +50,7 @@ export const userService = {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useSWR<Page, AxiosError>(
       [`${USER_URL}?size=${size}&page=${page}`, keywordType, keyword],
-      url => common.fetcher(url, { keywordType, keyword }),
+      ([url]) => common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     ),
   get: async (userId: string) => axios.get(`${USER_URL}/${userId}`),

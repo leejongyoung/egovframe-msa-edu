@@ -1,6 +1,6 @@
 import ActiveLink from '@components/ActiveLink'
 import { ASSET_PATH } from '@constants/env'
-import Hidden from '@material-ui/core/Hidden'
+import Hidden from '@components/Hidden'
 import { ISideMenu, menuStateAtom } from '@stores'
 import { translateToLang } from '@utils'
 import React, { useEffect, useState } from 'react'
@@ -34,7 +34,7 @@ const Footer = () => {
                 </li>
               ))}
           </ul>
-          <Hidden xsDown>
+          <Hidden smDown>
             <div>
               <div>
                 <dl>
@@ -103,7 +103,7 @@ const Footer = () => {
         </div>
       </footer>
     </>
-  )
+  );
 }
 
 export default Footer

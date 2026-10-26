@@ -1,9 +1,51 @@
 import { IMenuTree } from '@service'
-import produce from 'immer'
+import { produce } from 'immer'
 import DraggableTreeBuilder from './DraaggableTreeBuilder'
 
+export type ItemId = string | number
+export interface TreeItem {
+  id: ItemId
+  children: ItemId[]
+  isExpanded?: boolean
+  hasChildren?: boolean
+  isChildrenLoading?: boolean
+  data?: IMenuTree
+}
+export interface TreeData {
+  rootId: ItemId
+  items: Record<ItemId, TreeItem>
+}
+export interface TreeSourcePosition {
+  parentId: ItemId
+  index: number
+}
+export interface TreeDestinationPosition extends TreeSourcePosition {}
+
+export const updateTreeItem = (
+  tree: TreeData,
+  id: ItemId,
+  patch: Partial<TreeItem>,
+): TreeData =>
+  produce(tree, draft => {
+    Object.assign(draft.items[id], patch)
+  })
+
+export const moveTreeItem = (
+  tree: TreeData,
+  source: TreeSourcePosition,
+  destination: TreeDestinationPosition,
+): TreeData =>
+  produce(tree, draft => {
+    const [id] = draft.items[source.parentId].children.splice(source.index, 1)
+    draft.items[destination.parentId].children.splice(destination.index, 0, id)
+    for (const parentId of [source.parentId, destination.parentId]) {
+      draft.items[parentId].hasChildren =
+        draft.items[parentId].children.length > 0
+    }
+  })
+
 /**
- * hierarchy json data -> atlaskit flat tree data
+ * hierarchy json data -> indexed tree data
  *
  * @param data
  * @returns

@@ -1,9 +1,11 @@
-import { Button } from '@material-ui/core'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Alert, { Color } from '@material-ui/lab/Alert'
+import { Button } from '@mui/material'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import Alert, { AlertColor as Color } from '@mui/material/Alert'
 import React, { useState } from 'react'
 
 const useStyles = makeStyles((_: Theme) =>

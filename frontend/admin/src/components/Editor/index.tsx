@@ -1,5 +1,7 @@
 import Loader from '@components/Loader'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import React, { useEffect, useRef, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -26,12 +28,64 @@ const Editor = (props: IEditor) => {
   const { CKEditor, ClassicEditor } = editorRef.current || {}
 
   useEffect(() => {
+    let mounted = true
+    Promise.all([import('ckeditor5'), import('@ckeditor/ckeditor5-react')]).then(([editor, integration]) => {
+    if (!mounted) return
+    const {
+      ClassicEditor,
+      Essentials,
+      Paragraph,
+      Heading,
+      Bold,
+      Italic,
+      Link,
+      List,
+      BlockQuote,
+      Image,
+      ImageCaption,
+      ImageStyle,
+      ImageToolbar,
+      ImageUpload,
+      CKFinderUploadAdapter,
+      Table,
+      TableToolbar,
+      MediaEmbed,
+      PasteFromOffice,
+      Indent,
+      Autoformat,
+      TextTransformation,
+    } = editor
     editorRef.current = {
-      CKEditor: require('@ckeditor/ckeditor5-react').CKEditor,
-      ClassicEditor: require('@ckeditor/ckeditor5-build-classic'),
+      CKEditor: integration.CKEditor,
+      ClassicEditor,
+      plugins: [
+        Essentials,
+        Paragraph,
+        Heading,
+        Bold,
+        Italic,
+        Link,
+        List,
+        BlockQuote,
+        Image,
+        ImageCaption,
+        ImageStyle,
+        ImageToolbar,
+        ImageUpload,
+        CKFinderUploadAdapter,
+        Table,
+        TableToolbar,
+        MediaEmbed,
+        PasteFromOffice,
+        Indent,
+        Autoformat,
+        TextTransformation,
+      ],
     }
 
     setEditorLoaded(true)
+    })
+    return () => { mounted = false }
   }, [])
 
   return (
@@ -42,6 +96,39 @@ const Editor = (props: IEditor) => {
             editor={ClassicEditor}
             data={contents}
             config={{
+              licenseKey: 'GPL',
+              plugins: editorRef.current.plugins,
+              toolbar: [
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'link',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'outdent',
+                'indent',
+                '|',
+                'uploadImage',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo',
+                'redo',
+              ],
+              image: {
+                toolbar: [
+                  'imageTextAlternative',
+                  'toggleImageCaption',
+                  'imageStyle:inline',
+                  'imageStyle:block',
+                  'imageStyle:side',
+                ],
+              },
+              table: {
+                contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
+              },
               ckfinder: {
                 uploadUrl: `/api/editor`,
               },

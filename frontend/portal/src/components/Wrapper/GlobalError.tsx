@@ -1,6 +1,8 @@
 import CustomAlert from '@components/CustomAlert'
-import { ButtonProps } from '@material-ui/core/Button'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { ButtonProps } from '@mui/material/Button'
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { errorStateAtom } from '@stores'
 import { useSnackbar } from 'notistack'
 import React, { useEffect, useState } from 'react'

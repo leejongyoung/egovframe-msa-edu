@@ -1,74 +1,35 @@
 import React from 'react'
-import Collapse from '@material-ui/core/Collapse'
-import IconButton from '@material-ui/core/IconButton'
-import TableCell from '@material-ui/core/TableCell'
-import TableRow from '@material-ui/core/TableRow'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
-import {
-  GridRowData,
-  GridRowId,
-  GridValueFormatterParams,
-} from '@material-ui/data-grid'
+import Collapse from '@mui/material/Collapse'
+import IconButton from '@mui/material/IconButton'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import { GridRowModel, GridRowId } from '@mui/x-data-grid'
 import { CollapseColDef } from './CollapsibleTable'
 
 interface CollapseRowProps {
   columns: CollapseColDef[]
-  row: GridRowData
+  row: GridRowModel
   collapseColumn: React.ReactNode
   collapseClassName?: string
   rowId?: GridRowId
 }
 
-const formatterParams = (
-  column: CollapseColDef,
-  row: GridRowData,
-  rowId: GridRowId,
-): GridValueFormatterParams => {
-  return {
-    id: row[rowId],
-    field: column.field,
-    value: row[column.field],
-    row: row,
-    colDef: { ...column, computedWidth: column.width },
-    api: null,
-    cellMode: column.editable ? 'edit' : 'view',
-    hasFocus: false,
-    tabIndex: -1,
-    getValue: (id: GridRowId, field: string) => row[field],
-  }
-}
-
-const cellParams = (
-  formatParams: GridValueFormatterParams,
-  column: CollapseColDef,
-  row: GridRowData,
-) => {
-  let formattedValue = formatParams.value
-  if (column.valueFormatter) {
-    formattedValue = column.valueFormatter(formatParams)
-  }
-
-  return {
-    ...formatParams,
-    formattedValue,
-  }
-}
-
 const renderCell = (
   column: CollapseColDef,
-  row: GridRowData,
+  row: GridRowModel,
   rowId: GridRowId,
   rowIdx: number,
   toggleOpen: () => void,
 ) => {
-  let cell: React.ReactNode = <>{row[column.field]}</>
+  const value = row[column.field]
+  let cell: React.ReactNode = value
 
-  const gridValueFormatterParams = formatterParams(column, row, rowId)
-  if (column.valueFormatter) {
-    cell = column.valueFormatter(gridValueFormatterParams)
-  } else if (column.renderCell) {
-    cell = column.renderCell(cellParams(gridValueFormatterParams, column, row))
+  if (column.renderCell) {
+    cell = column.renderCell({ id: row[rowId], field: column.field, value, row })
+  } else if (column.valueFormatter) {
+    cell = column.valueFormatter(value)
   }
 
   return (

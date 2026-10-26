@@ -1,12 +1,14 @@
-import Collapse from '@material-ui/core/Collapse'
-import Icon from '@material-ui/core/Icon'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import ExpandLess from '@material-ui/icons/ExpandLess'
-import ExpandMore from '@material-ui/icons/ExpandMore'
+import Collapse from '@mui/material/Collapse'
+import Icon from '@mui/material/Icon'
+import List from '@mui/material/List'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import ExpandLess from '@mui/icons-material/ExpandLess'
+import ExpandMore from '@mui/icons-material/ExpandMore'
 import { currentMenuStateAtom, ISideMenu } from '@stores'
 import theme from '@styles/theme'
 import { useRouter } from 'next/router'
@@ -69,13 +71,12 @@ const MenuItem: React.FC<IMenuItemProps> = props => {
         current?.id === item.id
           ? true
           : item.children?.findIndex(ele => ele.id === current?.id) > -1
-          ? true
-          : false
+            ? true
+            : false
 
       return (
         <div key={`list-item-div-${item.id}`} className={classes.root}>
-          <ListItem
-            button
+          <ListItemButton
             key={`list-item-${item.id}`}
             onClick={() => onClick(item)}
             className={`${classes.menuItem} ${active ? classes.active : null}`}
@@ -99,7 +100,7 @@ const MenuItem: React.FC<IMenuItemProps> = props => {
             {drawerOpen &&
               item.children.filter(i => i.isShow).length > 0 &&
               (open ? <ExpandLess /> : <ExpandMore />)}
-          </ListItem>
+          </ListItemButton>
           {item.children.filter(i => i.isShow).length > 0 ? (
             <Collapse in={open && drawerOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>

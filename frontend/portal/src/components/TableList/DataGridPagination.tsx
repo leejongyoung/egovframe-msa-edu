@@ -1,24 +1,28 @@
 import React from 'react'
-import Pagination, { PaginationProps } from '@material-ui/lab/Pagination'
-import { useGridSlotComponentProps } from '@material-ui/data-grid'
-import PaginationItem from '@material-ui/lab/PaginationItem'
+import Pagination, { PaginationProps } from '@mui/material/Pagination'
+import PaginationItem from '@mui/material/PaginationItem'
+import {
+  gridPageCountSelector,
+  gridPageSelector,
+  useGridApiContext,
+  useGridSelector,
+} from '@mui/x-data-grid'
 
-interface DataGridPaginationProps extends PaginationProps {}
-
-const DataGridPagination = (props: DataGridPaginationProps) => {
-  const { state, apiRef } = useGridSlotComponentProps()
+const DataGridPagination = (props: PaginationProps) => {
+  const apiRef = useGridApiContext()
+  const page = useGridSelector(apiRef, gridPageSelector)
+  const pageCount = useGridSelector(apiRef, gridPageCountSelector)
 
   return (
     <div className="paging">
       <Pagination
         color="primary"
-        page={state.pagination.page + 1}
-        count={state.pagination.pageCount}
-        showFirstButton={true}
-        showLastButton={true}
-        // @ts-expect-error
-        renderItem={item => <PaginationItem {...item} disableRipple />}
-        onChange={(event, value) => apiRef.current.setPage(value - 1)}
+        page={page + 1}
+        count={pageCount}
+        showFirstButton
+        showLastButton
+        renderItem={item => <PaginationItem {...item} />}
+        onChange={(_, value) => apiRef.current.setPage(value - 1)}
         {...props}
       />
     </div>

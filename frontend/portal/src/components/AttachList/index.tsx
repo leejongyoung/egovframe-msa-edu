@@ -1,9 +1,11 @@
-import IconButton from '@material-ui/core/IconButton'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import ClearIcon from '@material-ui/icons/Clear'
+import IconButton from '@mui/material/IconButton'
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import ClearIcon from '@mui/icons-material/Clear'
 import { fileService, IAttachmentResponse } from '@service'
 import { formatBytes } from '@utils'
-import produce from 'immer'
+import { produce } from 'immer'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -55,15 +57,15 @@ const AttachList = (props: AttachListProps) => {
                   onClick={(e: React.MouseEvent) => {
                     handleDelete(file)
                   }}
-                >
+                  size="large">
                   <ClearIcon fontSize="inherit" />
                 </IconButton>
               )}
             </div>
-          )
+          );
         })}
     </>
-  )
+  );
 }
 
 export default AttachList

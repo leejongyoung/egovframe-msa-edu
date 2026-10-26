@@ -5,11 +5,16 @@ import {
   treeChecked,
   treeTargetChecked,
 } from '@components/DraggableTreeMenu/TreeUtils'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
-import ArrowRightIcon from '@material-ui/icons/ArrowRight'
-import TreeView, { TreeViewProps } from '@material-ui/lab/TreeView'
-import produce from 'immer'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ArrowRightIcon from '@mui/icons-material/ArrowRight'
+import {
+  SimpleTreeView,
+  SimpleTreeViewProps,
+} from '@mui/x-tree-view/SimpleTreeView'
+import { produce } from 'immer'
 import React, {
   forwardRef,
   useEffect,
@@ -35,7 +40,7 @@ interface CustomTreeViewProps {
   data: any[]
   isChecked?: boolean
   isAllExpanded?: boolean
-  treeViewProps?: TreeViewProps
+  treeViewProps?: SimpleTreeViewProps<false>
 }
 
 const renderTree = (
@@ -46,7 +51,7 @@ const renderTree = (
   return (
     <CustomTreeItem
       key={`item-${nodes.id}`}
-      nodeId={`${nodes.id}`}
+      itemId={`${nodes.id}`}
       node={nodes}
       isChecked={isChecked}
       handleChecked={handleChecked}
@@ -65,7 +70,7 @@ const CustomTreeView = forwardRef<CustomTreeViewType, CustomTreeViewProps>(
     const { data, isChecked = false, isAllExpanded, treeViewProps } = props
     const classes = useStyles()
 
-    const [expanded, setExpanded] = useState<string[]>(null)
+    const [expanded, setExpanded] = useState<string[]>([])
     const [tree, setTree] = useState(data)
 
     useEffect(() => {
@@ -83,7 +88,10 @@ const CustomTreeView = forwardRef<CustomTreeViewType, CustomTreeViewProps>(
       }
     }, [isAllExpanded])
 
-    const handleNodeToggle = (event: object, nodeIds: []) => {
+    const handleNodeToggle = (
+      event: React.SyntheticEvent | null,
+      nodeIds: string[],
+    ) => {
       setExpanded(nodeIds)
     }
 
@@ -169,17 +177,15 @@ const CustomTreeView = forwardRef<CustomTreeViewType, CustomTreeViewProps>(
     }))
 
     return (
-      <TreeView
+      <SimpleTreeView
         className={classes.root}
-        defaultCollapseIcon={<ArrowDropDownIcon />}
-        defaultExpandIcon={<ArrowRightIcon />}
-        defaultEndIcon={<div style={{ width: 24 }} />}
-        expanded={expanded}
-        onNodeToggle={handleNodeToggle}
+        slots={{ collapseIcon: ArrowDropDownIcon, expandIcon: ArrowRightIcon }}
+        expandedItems={expanded}
+        onExpandedItemsChange={handleNodeToggle}
         {...treeViewProps}
       >
         {tree && tree.map(item => renderTree(item, isChecked, handleChecked))}
-      </TreeView>
+      </SimpleTreeView>
     )
   },
 )

@@ -4,25 +4,23 @@ import { GRID_PAGE_SIZE } from '@constants'
 import usePage from '@hooks/usePage'
 import useSearchTypes from '@hooks/useSearchType'
 import { convertStringToDateFormat } from '@libs/date'
-import Box from '@material-ui/core/Box'
-import Link from '@material-ui/core/Link'
-import MenuItem from '@material-ui/core/MenuItem'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
-import Typography from '@material-ui/core/Typography'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
+import MenuItem from '@mui/material/MenuItem'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 import { ICode, ILocation, locationService, reserveItemService } from '@service'
 import { conditionAtom, conditionValue, errorStateSelector } from '@stores'
 import { Page, rownum } from '@utils'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo, useState } from 'react'
-import { TFunction, useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
+import { TFunction } from 'i18next'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { reserveService } from 'src/service/Reserve'
 
@@ -65,8 +63,12 @@ const getColumns: ColumnType = (props, data, handleUpdate, toggleIsUse, t) => {
       align: 'center',
       width: 80,
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'asc'),
+      valueGetter: (value, row, column, apiRef) =>
+        rownum(
+          data,
+          apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+          'asc',
+        ),
     },
     {
       field: 'locationId',
@@ -75,7 +77,7 @@ const getColumns: ColumnType = (props, data, handleUpdate, toggleIsUse, t) => {
       align: 'center',
       flex: 1,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <>
           {
             locations.find(item => item.locationId === params.value)
@@ -91,7 +93,7 @@ const getColumns: ColumnType = (props, data, handleUpdate, toggleIsUse, t) => {
       align: 'center',
       flex: 1,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <>{categories.find(item => item.codeId === params.value).codeName}</>
       ),
     },
@@ -102,7 +104,7 @@ const getColumns: ColumnType = (props, data, handleUpdate, toggleIsUse, t) => {
       align: 'left',
       flex: 1,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Typography>
           <Link href={`/reserve/${params.row.reserveId}`} variant="body2">
             {params.value}
@@ -132,7 +134,7 @@ const getColumns: ColumnType = (props, data, handleUpdate, toggleIsUse, t) => {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <>{status.find(item => item.codeId === params.value).codeName}</>
       ),
     },
@@ -143,11 +145,8 @@ const getColumns: ColumnType = (props, data, handleUpdate, toggleIsUse, t) => {
       align: 'center',
       sortable: false,
       flex: 1,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        convertStringToDateFormat(
-          params.value as string,
-          'yyyy-MM-dd HH:mm:ss',
-        ),
+      valueFormatter: (value, row, column, apiRef) =>
+        convertStringToDateFormat(value as string, 'yyyy-MM-dd HH:mm:ss'),
     },
   ]
 }
@@ -316,10 +315,12 @@ const Reserve = (props: ReserveListProps) => {
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        page={page}
-        onPageChange={handlePageChange}
         getRowId={r => r.reserveId}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

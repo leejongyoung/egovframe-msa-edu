@@ -140,7 +140,7 @@ export const reserveService = {
         locationId,
         categoryId,
       ],
-      url =>
+      ([url]: [string, ...unknown[]]) =>
         common.fetcher(url, {
           keywordType,
           keyword,
@@ -196,7 +196,7 @@ export const reserveService = {
         locationId,
         categoryId,
       ],
-      url =>
+      ([url]: [string, ...unknown[]]) =>
         common.fetcher(url, {
           keywordType,
           keyword,

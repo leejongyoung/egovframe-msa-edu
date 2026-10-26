@@ -1,14 +1,11 @@
 import CollapsibleTable from '@components/TableList/CollapsibleTable'
 import { convertStringToDateFormat, format as dateFormat } from '@libs/date'
-import {
-  GridCellParams,
-  GridRowData,
-  GridValueFormatterParams,
-} from '@material-ui/data-grid'
+import { GridRowModel } from '@mui/x-data-grid'
+import { CollapseCellParams } from '@components/TableList/CollapsibleTable'
 import { Page } from '@service'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import React, { useCallback, useMemo } from 'react'
-import { ColumnsType } from '.'
+import { CollapseColumnsType } from '.'
 
 interface FAQBoardListProps {
   data: Page
@@ -20,7 +17,7 @@ interface FAQBoardListProps {
   ) => void
 }
 
-const getColumns: ColumnsType = (data, t) => {
+const getColumns: CollapseColumnsType = (data, t) => {
   return [
     {
       field: 'postsTitle',
@@ -38,9 +35,9 @@ const getColumns: ColumnsType = (data, t) => {
       minWidth: 140,
       cellClassName: 'span',
       sortable: false,
-      valueFormatter: (params: GridValueFormatterParams) =>
-        params.value
-          ? dateFormat(new Date(params.value as string), 'yyyy-MM-dd')
+      valueFormatter: (value) =>
+        value
+          ? dateFormat(new Date(value as string), 'yyyy-MM-dd')
           : null,
     },
     {
@@ -52,10 +49,10 @@ const getColumns: ColumnsType = (data, t) => {
       minWidth: 100,
       sortable: false,
     },
-  ]
+  ];
 }
 
-const getXsColumns: ColumnsType = (data, t) => {
+const getXsColumns: CollapseColumnsType = (data, t) => {
   return [
     {
       field: 'postsTitle',
@@ -66,7 +63,7 @@ const getXsColumns: ColumnsType = (data, t) => {
     },
   ]
 
-  function renderCell(params: GridCellParams) {
+  function renderCell(params: CollapseCellParams) {
     return (
       <div>
         <div className="title">{params.value}</div>
@@ -92,7 +89,7 @@ const FAQBaordList = ({
   const columns = useMemo(() => getColumns(data, t), [data, t])
   const xsColumns = useMemo(() => getXsColumns(data, t), [data, t])
 
-  const renderCollapseRow = useCallback((row: GridRowData) => {
+  const renderCollapseRow = useCallback((row: GridRowModel) => {
     return (
       <>
         <p dangerouslySetInnerHTML={{ __html: row.postsContent }} />

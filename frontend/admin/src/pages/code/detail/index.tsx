@@ -5,24 +5,22 @@ import CustomDataGrid from '@components/Table/CustomDataGrid'
 import { GRID_PAGE_SIZE } from '@constants'
 import usePage from '@hooks/usePage'
 import useSearchTypes from '@hooks/useSearchType'
-import Box from '@material-ui/core/Box'
-import MenuItem from '@material-ui/core/MenuItem'
+import Box from '@mui/material/Box'
+import MenuItem from '@mui/material/MenuItem'
 // material-ui deps
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Switch from '@material-ui/core/Switch'
-import TextField from '@material-ui/core/TextField'
-import {
-  GridCellParams,
-  GridColDef,
-  GridValueGetterParams,
-} from '@material-ui/data-grid'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+import { GridRenderCellParams, GridColDef } from '@mui/x-data-grid'
 //api
 import { codeService, ICode } from '@service'
 import { conditionAtom, conditionValue, errorStateSelector } from '@stores'
 import { Page, rownum } from '@utils'
 import { AxiosError } from 'axios'
 import { GetServerSideProps, NextPage } from 'next'
-import { TFunction } from 'next-i18next'
+import { TFunction } from 'i18next'
 import { useRouter } from 'next/router'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -71,8 +69,12 @@ const getColumns: ColumnsType = (
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        rownum(data, params.api.getRowIndex(params.id), 'desc'),
+      valueGetter: (value, row, column, apiRef) =>
+        rownum(
+          data,
+          apiRef.current.getRowIndexRelativeToVisibleRows(row.id),
+          'desc',
+        ),
     },
     {
       field: 'parentCodeId',
@@ -102,7 +104,7 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 120,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Switch
           checked={Boolean(params.value)}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -118,7 +120,7 @@ const getColumns: ColumnsType = (
       align: 'center',
       width: 200,
       sortable: false,
-      renderCell: (params: GridCellParams) => (
+      renderCell: (params: GridRenderCellParams) => (
         <GridButtons
           id={params.row.codeId as string}
           handleUpdate={updateCode}
@@ -287,10 +289,12 @@ const CodeDetail: NextPage<IParentCodeProps> = ({ parentCodes }) => {
         columns={columns}
         rowCount={data?.totalElements}
         paginationMode="server"
-        pageSize={GRID_PAGE_SIZE}
-        page={page}
-        onPageChange={handlePageChange}
         getRowId={r => r.codeId}
+        paginationModel={{
+          page: page,
+          pageSize: GRID_PAGE_SIZE,
+        }}
+        onPaginationModelChange={model => handlePageChange(model.page)}
       />
     </div>
   )

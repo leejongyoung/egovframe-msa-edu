@@ -1,21 +1,23 @@
 import { ControlledTextField } from '@components/ControlledField'
 import DialogPopup from '@components/DialogPopup'
 import DisableTextField from '@components/DisableTextField'
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import CardHeader from '@material-ui/core/CardHeader'
-import Collapse from '@material-ui/core/Collapse'
-import Divider from '@material-ui/core/Divider'
-import IconButton from '@material-ui/core/IconButton'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import ExpandLessIcon from '@material-ui/icons/ExpandLess'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+import Collapse from '@mui/material/Collapse'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import User from '@pages/user'
 import { IReserve, IUser, ReserveFormProps } from '@service'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import React, { useEffect, useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -109,7 +111,7 @@ const ReserveClientInfo = (props: ReserveClientInfoProps) => {
     <Card className={classes.root}>
       <CardActions className={classes.header}>
         <CardHeader title={`${t('reserve.user')} ${t('common.information')}`} />
-        <IconButton onClick={handleExpandClick}>
+        <IconButton onClick={handleExpandClick} size="large">
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </CardActions>
@@ -134,12 +136,16 @@ const ReserveClientInfo = (props: ReserveClientInfoProps) => {
                 </>
               }
               labelProps={{
-                xs: 4,
-                sm: 2,
+                size: {
+                  xs: 4,
+                  sm: 2,
+                },
               }}
               valueProps={{
-                xs: 8,
-                sm: 10,
+                size: {
+                  xs: 8,
+                  sm: 10,
+                },
               }}
             />
             <ControlledTextField

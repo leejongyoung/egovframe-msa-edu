@@ -1,20 +1,22 @@
 import DisableTextField from '@components/DisableTextField'
 import { convertStringToDateFormat } from '@libs/date'
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import CardHeader from '@material-ui/core/CardHeader'
-import Collapse from '@material-ui/core/Collapse'
-import Divider from '@material-ui/core/Divider'
-import Grid from '@material-ui/core/Grid'
-import IconButton from '@material-ui/core/IconButton'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import ExpandLessIcon from '@material-ui/icons/ExpandLess'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+import Collapse from '@mui/material/Collapse'
+import Divider from '@mui/material/Divider'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { ICode, IReserveItemRelation } from '@service'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import React, { useState } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -60,7 +62,7 @@ const ReserveItemInfo = (props: ReserveItemInfoProps) => {
     <Card className={classes.root}>
       <CardActions className={classes.header}>
         <CardHeader title={`${t('reserve_item')} ${t('common.information')}`} />
-        <IconButton onClick={handleExpandClick}>
+        <IconButton onClick={handleExpandClick} size="large">
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </CardActions>
@@ -68,19 +70,34 @@ const ReserveItemInfo = (props: ReserveItemInfoProps) => {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent className={classes.container}>
           <Grid container spacing={1}>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <DisableTextField
                 label={t('location')}
                 value={data.location.locationName}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <DisableTextField
                 label={t('reserve_item.type')}
                 value={data.categoryName}
               />
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <DisableTextField
                 label={t('reserve_item.name')}
                 value={
@@ -100,16 +117,25 @@ const ReserveItemInfo = (props: ReserveItemInfoProps) => {
                   </>
                 }
                 labelProps={{
-                  xs: 4,
-                  sm: 2,
+                  size: {
+                    xs: 4,
+                    sm: 2,
+                  },
                 }}
                 valueProps={{
-                  xs: 8,
-                  sm: 10,
+                  size: {
+                    xs: 8,
+                    sm: 10,
+                  },
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <DisableTextField
                 label={
                   data.categoryId === 'education'
@@ -119,13 +145,23 @@ const ReserveItemInfo = (props: ReserveItemInfoProps) => {
                 value={data.totalQty}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <DisableTextField
                 label={t('reserve_item.selection_means')}
                 value={data.selectionMeansName}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <DisableTextField
                 label={`${t('reserve_item.operation')} ${t('reserve.period')}`}
                 value={`${convertStringToDateFormat(
@@ -133,7 +169,12 @@ const ReserveItemInfo = (props: ReserveItemInfoProps) => {
                 )} ~ ${convertStringToDateFormat(data.operationEndDate)}`}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <DisableTextField
                 label={`${t('reserve_item.request')} ${t('reserve.period')}`}
                 value={
@@ -151,23 +192,32 @@ const ReserveItemInfo = (props: ReserveItemInfoProps) => {
                 }
               />
             </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 12,
+              }}
+            >
               <DisableTextField
                 label={`${t('common.free')} ${t('common.paid')}`}
                 value={data.isPaid ? t('common.paid') : t('common.free')}
                 labelProps={{
-                  xs: 4,
-                  sm: 2,
+                  size: {
+                    xs: 4,
+                    sm: 2,
+                  },
                 }}
                 valueProps={{
-                  xs: 8,
-                  sm: 10,
+                  size: {
+                    xs: 8,
+                    sm: 10,
+                  },
                 }}
               />
             </Grid>
 
             {reserveStatus && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <DisableTextField
                   label={t('reserve.status')}
                   value={
@@ -180,12 +230,16 @@ const ReserveItemInfo = (props: ReserveItemInfoProps) => {
                     )
                   }
                   labelProps={{
-                    xs: 4,
-                    sm: 2,
+                    size: {
+                      xs: 4,
+                      sm: 2,
+                    },
                   }}
                   valueProps={{
-                    xs: 8,
-                    sm: 10,
+                    size: {
+                      xs: 8,
+                      sm: 10,
+                    },
                   }}
                 />
               </Grid>

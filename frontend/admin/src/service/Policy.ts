@@ -42,7 +42,7 @@ export const policyService = {
   search: ({ keywordType, keyword, size, page }: SearchPayload) => {
     return useSWR<Page, AxiosError>(
       [`${POLICY_API}?size=${size}&page=${page}`, keywordType, keyword],
-      (url, keywordType, keyword) =>
+      ([url, keywordType, keyword]) =>
         common.fetcher(url, { keywordType, keyword }),
       { revalidateOnFocus: false, errorRetryCount: 0 },
     )

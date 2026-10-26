@@ -2,7 +2,7 @@ import ActiveLink from '@components/ActiveLink'
 import Sitemap from '@components/Sitemap'
 import { DEFAULT_APP_NAME } from '@constants'
 import { ASSET_PATH } from '@constants/env'
-import Hidden from '@material-ui/core/Hidden'
+import Hidden from '@components/Hidden'
 import { currentMenuStateAtom, menuStateAtom, userAtom } from '@stores'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -42,7 +42,7 @@ const Header = () => {
                 }
               />
             </Hidden>
-            <Hidden xsDown>
+            <Hidden smDown>
               <ActiveLink
                 href="/"
                 children={
@@ -54,7 +54,7 @@ const Header = () => {
               />
             </Hidden>
           </h1>
-          <Hidden xsDown>
+          <Hidden smDown>
             <nav>
               <ul>
                 {menus &&
@@ -103,7 +103,7 @@ const Header = () => {
         </div>
       </header>
     </>
-  )
+  );
 }
 
 export default Header

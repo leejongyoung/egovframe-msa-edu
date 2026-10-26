@@ -1,5 +1,7 @@
 import CustomAlert from '@components/CustomAlert'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import {
   AttachmentSavePayload,
   fileService,
@@ -8,7 +10,7 @@ import {
   UploadInfoReqeust,
 } from '@service'
 import { format, formatBytes } from '@utils'
-import { useTranslation } from 'next-i18next'
+import { useTranslation } from 'next-i18next/pages'
 import React, {
   createContext,
   forwardRef,

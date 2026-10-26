@@ -4,21 +4,23 @@ import DialogPopup from '@components/DialogPopup'
 import DisableTextField from '@components/DisableTextField'
 import ValidationAlert from '@components/EditForm/ValidationAlert'
 import { convertStringToDateFormat } from '@libs/date'
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import CardHeader from '@material-ui/core/CardHeader'
-import Collapse from '@material-ui/core/Collapse'
-import Divider from '@material-ui/core/Divider'
-import Grid from '@material-ui/core/Grid'
-import IconButton from '@material-ui/core/IconButton'
-import Paper from '@material-ui/core/Paper'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
-import Typography from '@material-ui/core/Typography'
-import ExpandLessIcon from '@material-ui/icons/ExpandLess'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+import Collapse from '@mui/material/Collapse'
+import Divider from '@mui/material/Divider'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
+import { Theme } from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { IAttachmentResponse, IReserve } from '@service'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -153,7 +155,7 @@ const ReserveInfoView = ({
       <Card className={classes.root}>
         <CardActions className={classes.header}>
           <CardHeader title={`${t('reserve')} ${t('common.information')}`} />
-          <IconButton onClick={handleExpandClick}>
+          <IconButton onClick={handleExpandClick} size="large">
             {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </IconButton>
         </CardActions>
@@ -162,7 +164,7 @@ const ReserveInfoView = ({
           <CardContent className={classes.container}>
             <Grid container spacing={1}>
               {data.reserveItem.categoryId === 'education' ? null : (
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <DisableTextField
                     label={`${t('reserve.request')} ${t('common.period')}`}
                     value={`${convertStringToDateFormat(
@@ -172,7 +174,7 @@ const ReserveInfoView = ({
                 </Grid>
               )}
               {data.reserveItem.categoryId === 'space' ? null : (
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <DisableTextField
                     label={
                       data.reserveItem.categoryId === 'education'
@@ -185,13 +187,13 @@ const ReserveInfoView = ({
                   />
                 </Grid>
               )}
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <DisableTextField
                   label={`${t('reserve.request')} ${t('reserve.purpose')}`}
                   value={data.reservePurposeContent}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Paper className={classes.label}>
                   <Typography variant="body1">
                     {t('common.attachment')}
