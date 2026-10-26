@@ -12,8 +12,21 @@ contributions to `eGovFramework/egovframe-msa-edu`.
 - `work` is this fork's default integration branch. Develop upstream-bound
   changes on a topic from `main`; develop fork infrastructure on a topic from
   `work`. Open a fork PR against `work` and review its CI before submission.
-- Upstream also has 4.0.x, 4.1.x, 4.2.x, 4.3.x, 5.0.x and Dependabot branches. This setup does not change or sync
-  those branches; inspect their roles before creating any extra tracks.
+- Upstream also has release branches and Dependabot branches. This fork tracks none of them: the sync workflow
+  never touches them, and nothing is merged or cherry-picked automatically between them and `main`/`work`.
+  Roles (full-history comparison against upstream `main`, 2026-10-27):
+
+  | Branch | Role | Fork handling |
+  | --- | --- | --- |
+  | `4.0.x`–`4.3.x` | Legacy lines (Spring Boot 2.x, Java 1.8, last commit 2026-05-18); this fork treats them as historical snapshots | Not tracked, not mirrored |
+  | `5.0.x` | Direct center commits observed (3 unique commits; same Boot 3.5.6/Java 17 as `main`); release/back-merge policy unconfirmed | Not tracked, no automatic merge either way; use `main` |
+  | `main` | Upstream development line; target of all 78 observed merged contributions since 2026-06-01 | Mirrored byte-for-byte by fork `main` |
+  | `dependabot/*` | Upstream bot PR heads | Not tracked |
+  | `work` | Fork-only integration branch | Where fork work and CI live |
+
+  `5.0.x` fixes cannot be inferred from branch divergence alone; `security.md` does not name `5.0.x`, and how the
+  center releases or back-merges it is undocumented. Do not ask upstream. Upstream fixes reach this fork through
+  `main` only; request or apply nothing on `5.0.x`.
 
 Upstream's existing workflows target `main`. The separate fork CI targets
 `work` PRs and pushes and runs: Gradle builds for ten backend services (JDK 17), plus npm builds for admin and portal (Node 22).
