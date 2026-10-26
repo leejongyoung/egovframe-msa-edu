@@ -21,7 +21,7 @@
 │  ├─board-service
 │  ├─config
 │  ├─discovery
-│  ├─module-common
+│  ├─egovframe-cloud-module-common
 │  ├─portal-service
 │  ├─reserve-check-service
 │  ├─reserve-item-service
@@ -40,10 +40,12 @@
 │  │      └─pipeline
 │  ├─mysql
 │  │  └─init
-│  └─opensearch
-│      └─logstash
-│          ├─config
-│          └─pipeline
+│  ├─opensearch
+│  │  └─logstash
+│  │      ├─config
+│  │      └─pipeline
+│  ├─rabbitmq
+│  └─zipkin
 ├─frontend
 │  ├─admin
 │  │  ├─public
@@ -127,6 +129,7 @@
 - `/backend/board-service`: 게시판 서비스 (게시판, 게시물, 첨부파일 관리)
 - `/backend/config`: 별도의 통합된 설정 관리 서비스 제공을 통해 환경 독립적 서비스 제공
 - `/backend/discovery`: 마이크로서비스들을 등록하여 관리하고 요청 시 해당 서비스를 찾아 호출
+- `/backend/egovframe-cloud-module-common`: 여러 마이크로서비스에서 공통으로 사용하는 코드와 라이브러리를 제공하는 공통 모듈
 - `/backend/user-service`: 사용자 서비스 (로그인, 회원가입, 비밀번호 찾기, 관리자)
 - `/backend/portal-service`: 포털 공통 서비스 (메뉴, 코드, 컨텐츠, 권한, 인가, 배너, 첨부파일 관리)
 - `/backend/reserve-check-service`: 예약 확인 서비스
@@ -145,7 +148,7 @@
 - `/k8s/environments/logging`: Centralized Logging을 위한 ELK 관련 객체 정의
 - `/k8s/environments/nfs`: NFS 노드 볼륨 구성
 - `/k8s/environments/rabbitmq`: Message Broker 관련 객체 정의
-- `/k8s/environments/storage`: PersistentVolumeClaim 정의
+- `/k8s/storage`: PersistentVolumeClaim 정의
 - `/k8s/environments/vagrant`: 가상화 소프트웨어 개발환경의 생성을 쉽게 구성하도록 하는 Vagrant 관련 정의
 - `/k8s/environments/zipkin`: 분산 트랜잭션 추적을 위한 Zipkin 관련 정의
 
