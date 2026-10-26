@@ -1,0 +1,45 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :compileJava
+> Task :processResources UP-TO-DATE
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-10-26 08:01:08.655 [34mINFO [0;39m [35m6625[0;39m - [SpringApplicationShutdownHook, , ] [36mo.s.b.w.e.t.GracefulShutdown[0;39m: Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-26 08:01:08.659 [34mINFO [0;39m [35m6629[0;39m - [tomcat-shutdown, , ] [36mo.s.b.w.e.t.GracefulShutdown[0;39m: Graceful shutdown complete
+2026-10-26 08:01:08.664 [34mINFO [0;39m [35m6634[0;39m - [SpringApplicationShutdownHook, , ] [36mo.s.i.e.EventDrivenConsumer[0;39m: Removing {logging-channel-adapter:_org.springframework.integration.errorLogger} as a subscriber to the 'errorChannel' channel
+2026-10-26 08:01:08.664 [34mINFO [0;39m [35m6634[0;39m - [SpringApplicationShutdownHook, , ] [36mo.s.i.c.PublishSubscribeChannel[0;39m: Channel 'application-1.errorChannel' has 0 subscriber(s).
+2026-10-26 08:01:08.664 [34mINFO [0;39m [35m6634[0;39m - [SpringApplicationShutdownHook, , ] [36mo.s.i.e.EventDrivenConsumer[0;39m: stopped bean '_org.springframework.integration.errorLogger'
+
+> Task :test
+
+ReactiveErrorResponseTest > missingReservationUsesDeclaredBusinessError() FAILED
+    java.lang.AssertionError at ReactiveErrorResponseTest.java:57
+
+ReactiveErrorResponseTest > unexpectedFailureUsesCommonServerError() FAILED
+    java.lang.AssertionError at ReactiveErrorResponseTest.java:70
+        Caused by: com.jayway.jsonpath.PathNotFoundException
+
+3 tests completed, 2 failed
+
+> Task :test FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///Users/leejongyoung/orca/workspaces/egovframe-msa-edu/msa-reactive-advice/backend/reserve-request-service/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 18s
+5 actionable tasks: 3 executed, 2 up-to-date

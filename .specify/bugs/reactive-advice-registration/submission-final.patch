@@ -1,0 +1,345 @@
+diff --git a/backend/README.md b/backend/README.md
+index 040fba4..6490ed6 100644
+--- a/backend/README.md
++++ b/backend/README.md
+@@ -18,3 +18,20 @@
+ 
+ ## 공통 개발/실행 방법
+ 각 서비스별 README를 참고하거나, 루트 README를 참고하세요.
++
++## 예약 서비스 오류 응답
++
++`reserve-check-service`, `reserve-item-service`, `reserve-request-service`는 공통
++reactive 예외 advice를 스캔하여 컨트롤러 오류를 JSON으로 반환합니다.
++응답에는 `timestamp`, `message`, `status`, `code`, `errors`가 포함됩니다.
++존재하지 않는 엔티티의 업무 오류는 HTTP 400 / `E003`, 처리되지 않은 예외는
++HTTP 500 / `E999`입니다. 기존 `@Valid` 경로의 입력 오류는 HTTP 400 / `E001`이며
++`errors`에 `field`, `rejectedValue`, `message`이 포함됩니다.
++
++이 등록은 새로운 요청 검증을 추가하지 않습니다. 예약 신청 API의 DTO 검증과
++인증 사용자로 예약 소유자를 결정하는 정책은 별도 변경 사항입니다.
++
++각 예약 서비스 디렉터리에서 `./gradlew test --tests '*ReactiveErrorResponseTest'`로
++실제 HTTP 라우팅, JWT 인증, 예외 응답 회귀 테스트를 실행할 수 있습니다.
++테스트는 서비스 경계를 모의 처리하고 외부 설정/검색/메시징 및 SQL 초기화를 끄므로
++MySQL·RabbitMQ 연동이나 전체 예약 업무의 종단간 검증을 의미하지 않습니다.
+diff --git a/backend/reserve-check-service/src/main/java/org/egovframe/cloud/reservechecksevice/ReserveCheckSeviceApplication.java b/backend/reserve-check-service/src/main/java/org/egovframe/cloud/reservechecksevice/ReserveCheckSeviceApplication.java
+index 3fa79ba..1065d48 100644
+--- a/backend/reserve-check-service/src/main/java/org/egovframe/cloud/reservechecksevice/ReserveCheckSeviceApplication.java
++++ b/backend/reserve-check-service/src/main/java/org/egovframe/cloud/reservechecksevice/ReserveCheckSeviceApplication.java
+@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
+ 
+ import reactivefeign.spring.config.EnableReactiveFeignClients;
+ 
+-@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.reservechecksevice"})
++@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.reactive.exception", "org.egovframe.cloud.reservechecksevice"})
+ @EnableDiscoveryClient
+ @EnableReactiveFeignClients
+ @SpringBootApplication
+diff --git a/backend/reserve-item-service/src/main/java/org/egovframe/cloud/reserveitemservice/ReserveItemServiceApplication.java b/backend/reserve-item-service/src/main/java/org/egovframe/cloud/reserveitemservice/ReserveItemServiceApplication.java
+index 41cc21b..2771890 100644
+--- a/backend/reserve-item-service/src/main/java/org/egovframe/cloud/reserveitemservice/ReserveItemServiceApplication.java
++++ b/backend/reserve-item-service/src/main/java/org/egovframe/cloud/reserveitemservice/ReserveItemServiceApplication.java
+@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
+ 
+ import reactivefeign.spring.config.EnableReactiveFeignClients;
+ 
+-@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.reserveitemservice"})
++@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.reactive.exception", "org.egovframe.cloud.reserveitemservice"})
+ @EnableDiscoveryClient
+ @EnableReactiveFeignClients
+ @SpringBootApplication
+diff --git a/backend/reserve-request-service/src/main/java/org/egovframe/cloud/reserverequestservice/ReserveRequestServiceApplication.java b/backend/reserve-request-service/src/main/java/org/egovframe/cloud/reserverequestservice/ReserveRequestServiceApplication.java
+index 04484ed..87a88c2 100644
+--- a/backend/reserve-request-service/src/main/java/org/egovframe/cloud/reserverequestservice/ReserveRequestServiceApplication.java
++++ b/backend/reserve-request-service/src/main/java/org/egovframe/cloud/reserverequestservice/ReserveRequestServiceApplication.java
+@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
+ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+ import org.springframework.context.annotation.ComponentScan;
+ 
+-@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.reserverequestservice"})
++@ComponentScan({"org.egovframe.cloud.common", "org.egovframe.cloud.reactive.exception", "org.egovframe.cloud.reserverequestservice"})
+ @EnableDiscoveryClient
+ @SpringBootApplication
+ public class ReserveRequestServiceApplication {
+diff --git a/backend/reserve-check-service/src/test/java/org/egovframe/cloud/reservechecksevice/api/ReactiveErrorResponseTest.java b/backend/reserve-check-service/src/test/java/org/egovframe/cloud/reservechecksevice/api/ReactiveErrorResponseTest.java
+new file mode 100644
+index 0000000..b6b55b7
+--- /dev/null
++++ b/backend/reserve-check-service/src/test/java/org/egovframe/cloud/reservechecksevice/api/ReactiveErrorResponseTest.java
+@@ -0,0 +1,91 @@
++package org.egovframe.cloud.reservechecksevice.api;
++
++import static org.mockito.ArgumentMatchers.any;
++import static org.mockito.Mockito.never;
++import static org.mockito.Mockito.verify;
++import static org.mockito.Mockito.when;
++
++import java.nio.charset.StandardCharsets;
++import java.security.MessageDigest;
++
++import org.egovframe.cloud.common.exception.EntityNotFoundException;
++import org.egovframe.cloud.reservechecksevice.service.ReserveService;
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.test.context.SpringBootTest;
++import org.springframework.http.MediaType;
++import org.springframework.test.context.bean.override.mockito.MockitoBean;
++import org.springframework.test.web.reactive.server.WebTestClient;
++
++import io.jsonwebtoken.Jwts;
++import io.jsonwebtoken.security.Keys;
++import reactor.core.publisher.Mono;
++
++@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
++        "spring.main.web-application-type=reactive",
++        "spring.cloud.config.enabled=false", "spring.cloud.discovery.enabled=false",
++        "eureka.client.enabled=false", "spring.cloud.bus.enabled=false",
++        "spring.cloud.stream.function.autodetect=false", "spring.cloud.function.definition=",
++        "spring.rabbitmq.listener.simple.auto-startup=false",
++        "spring.r2dbc.url=r2dbc:h2:mem:///advicecheck;DB_CLOSE_DELAY=-1",
++        "messages.directory=classpath:/messages", "token.secret=synthetic-advice-test-only",
++        "management.tracing.enabled=false", "spring.sql.init.mode=never"
++})
++class ReactiveErrorResponseTest {
++
++    @Autowired
++    private WebTestClient client;
++
++    @MockitoBean
++    private ReserveService reserveService;
++
++    @BeforeEach
++    void authenticate() throws Exception {
++        byte[] key = MessageDigest.getInstance("SHA-256")
++                .digest("synthetic-advice-test-only".getBytes(StandardCharsets.UTF_8));
++        String token = Jwts.builder().subject("advice-test-user").claim("authorities", "ROLE_USER")
++                .signWith(Keys.hmacShaKeyFor(key)).compact();
++        client = client.mutate().defaultHeader("Authorization", "Bearer " + token).build();
++    }
++
++    @Test
++    void missingReservationUsesDeclaredBusinessError() {
++        when(reserveService.findReserveById("missing-synthetic"))
++                .thenReturn(Mono.error(new EntityNotFoundException("missing-synthetic")));
++
++        client.get().uri("/api/v1/reserves/missing-synthetic").exchange()
++                .expectStatus().isBadRequest().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
++                .expectBody().jsonPath("$.status").isEqualTo(400).jsonPath("$.code").isEqualTo("E003")
++                .jsonPath("$.timestamp").exists().jsonPath("$.errors").isEmpty();
++    }
++
++    @Test
++    void unexpectedFailureUsesCommonServerError() {
++        when(reserveService.findReserveById("unexpected-synthetic"))
++                .thenReturn(Mono.error(new IllegalStateException("synthetic failure")));
++
++        client.get().uri("/api/v1/reserves/unexpected-synthetic").exchange()
++                .expectStatus().is5xxServerError().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
++                .expectBody().jsonPath("$.status").isEqualTo(500).jsonPath("$.code").isEqualTo("E999")
++                .jsonPath("$.errors").isEmpty();
++    }
++
++    @Test
++    void blankCancellationUsesFieldErrorsAndDoesNotCallService() {
++        client.put().uri("/api/v1/reserves/cancel/synthetic-reservation")
++                .contentType(MediaType.APPLICATION_JSON).bodyValue("{\"reasonCancelContent\":\"   \"}")
++                .exchange().expectStatus().isBadRequest()
++                .expectBody().jsonPath("$.code").isEqualTo("E001")
++                .jsonPath("$.errors[0].field").isEqualTo("reasonCancelContent");
++
++        verify(reserveService, never()).cancel(any(), any());
++    }
++
++    @Test
++    void healthRouteStillReturnsServiceInformation() {
++        client.get().uri("/actuator/health-info").exchange().expectStatus().isOk()
++                .expectBody(String.class).value(body -> org.assertj.core.api.Assertions.assertThat(body)
++                        .contains("Reserve Check Service"));
++    }
++}
+diff --git a/backend/reserve-item-service/src/test/java/org/egovframe/cloud/reserveitemservice/api/ReactiveErrorResponseTest.java b/backend/reserve-item-service/src/test/java/org/egovframe/cloud/reserveitemservice/api/ReactiveErrorResponseTest.java
+new file mode 100644
+index 0000000..31eb41d
+--- /dev/null
++++ b/backend/reserve-item-service/src/test/java/org/egovframe/cloud/reserveitemservice/api/ReactiveErrorResponseTest.java
+@@ -0,0 +1,92 @@
++package org.egovframe.cloud.reserveitemservice.api;
++
++import static org.mockito.ArgumentMatchers.any;
++import static org.mockito.Mockito.never;
++import static org.mockito.Mockito.verify;
++import static org.mockito.Mockito.when;
++
++import java.nio.charset.StandardCharsets;
++import java.security.MessageDigest;
++
++import org.egovframe.cloud.common.exception.EntityNotFoundException;
++import org.egovframe.cloud.reserveitemservice.service.reserveItem.ReserveItemService;
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.test.context.SpringBootTest;
++import org.springframework.http.MediaType;
++import org.springframework.test.context.bean.override.mockito.MockitoBean;
++import org.springframework.test.web.reactive.server.WebTestClient;
++
++import io.jsonwebtoken.Jwts;
++import io.jsonwebtoken.security.Keys;
++import reactor.core.publisher.Mono;
++
++@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
++        "spring.main.web-application-type=reactive",
++        "spring.cloud.config.enabled=false", "spring.cloud.discovery.enabled=false",
++        "eureka.client.enabled=false", "spring.cloud.bus.enabled=false",
++        "spring.cloud.stream.function.autodetect=false", "spring.cloud.function.definition=",
++        "spring.rabbitmq.listener.simple.auto-startup=false",
++        "spring.r2dbc.url=r2dbc:h2:mem:///adviceitem;DB_CLOSE_DELAY=-1",
++        "messages.directory=classpath:/messages", "token.secret=synthetic-advice-test-only",
++        "management.tracing.enabled=false", "spring.sql.init.mode=never"
++})
++class ReactiveErrorResponseTest {
++
++    @Autowired
++    private WebTestClient client;
++
++    @MockitoBean
++    private ReserveItemService reserveService;
++
++    @BeforeEach
++    void authenticate() throws Exception {
++        byte[] key = MessageDigest.getInstance("SHA-256")
++                .digest("synthetic-advice-test-only".getBytes(StandardCharsets.UTF_8));
++        String token = Jwts.builder().subject("advice-test-user").claim("authorities", "ROLE_USER")
++                .signWith(Keys.hmacShaKeyFor(key)).compact();
++        client = client.mutate().defaultHeader("Authorization", "Bearer " + token).build();
++    }
++
++    @Test
++    void missingItemUsesDeclaredBusinessError() {
++        when(reserveService.findById(991L))
++                .thenReturn(Mono.error(new EntityNotFoundException("missing-synthetic")));
++
++        client.get().uri("/api/v1/reserve-items/991").exchange()
++                .expectStatus().isBadRequest().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
++                .expectBody().jsonPath("$.status").isEqualTo(400).jsonPath("$.code").isEqualTo("E003")
++                .jsonPath("$.timestamp").exists().jsonPath("$.errors").isEmpty();
++    }
++
++    @Test
++    void unexpectedFailureUsesCommonServerError() {
++        when(reserveService.findById(992L))
++                .thenReturn(Mono.error(new IllegalStateException("synthetic failure")));
++
++        client.get().uri("/api/v1/reserve-items/992").exchange()
++                .expectStatus().is5xxServerError().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
++                .expectBody().jsonPath("$.status").isEqualTo(500).jsonPath("$.code").isEqualTo("E999")
++                .jsonPath("$.errors").isEmpty();
++    }
++
++    @MockitoBean
++    private org.egovframe.cloud.reserveitemservice.service.location.LocationService locationService;
++
++    @Test
++    void missingLocationNameUsesExistingValidation() {
++        client.post().uri("/api/v1/locations").contentType(MediaType.APPLICATION_JSON)
++                .bodyValue("{}").exchange().expectStatus().isBadRequest()
++                .expectBody().jsonPath("$.code").isEqualTo("E001")
++                .jsonPath("$.errors[0].field").isEqualTo("locationName");
++        verify(locationService, never()).save(any());
++    }
++
++    @Test
++    void healthRouteStillReturnsServiceInformation() {
++        client.get().uri("/actuator/health-info").exchange().expectStatus().isOk()
++                .expectBody(String.class).value(body -> org.assertj.core.api.Assertions.assertThat(body)
++                        .contains("Reserve Item Service"));
++    }
++}
+diff --git a/backend/reserve-request-service/src/test/java/org/egovframe/cloud/reserverequestservice/api/ReactiveErrorResponseTest.java b/backend/reserve-request-service/src/test/java/org/egovframe/cloud/reserverequestservice/api/ReactiveErrorResponseTest.java
+new file mode 100644
+index 0000000..5591940
+--- /dev/null
++++ b/backend/reserve-request-service/src/test/java/org/egovframe/cloud/reserverequestservice/api/ReactiveErrorResponseTest.java
+@@ -0,0 +1,80 @@
++package org.egovframe.cloud.reserverequestservice.api;
++
++import static org.mockito.ArgumentMatchers.any;
++import static org.mockito.Mockito.when;
++
++import java.nio.charset.StandardCharsets;
++import java.security.MessageDigest;
++
++import org.egovframe.cloud.common.exception.EntityNotFoundException;
++import org.egovframe.cloud.reserverequestservice.service.ReserveService;
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.test.context.SpringBootTest;
++import org.springframework.http.MediaType;
++import org.springframework.test.context.bean.override.mockito.MockitoBean;
++import org.springframework.test.web.reactive.server.WebTestClient;
++
++import io.jsonwebtoken.Jwts;
++import io.jsonwebtoken.security.Keys;
++import reactor.core.publisher.Mono;
++
++@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
++        "spring.main.web-application-type=reactive",
++        "spring.cloud.config.enabled=false", "spring.cloud.discovery.enabled=false",
++        "eureka.client.enabled=false", "spring.cloud.bus.enabled=false",
++        "spring.cloud.stream.function.autodetect=false", "spring.cloud.function.definition=",
++        "spring.rabbitmq.listener.simple.auto-startup=false",
++        "spring.r2dbc.url=r2dbc:h2:mem:///advicerequest;DB_CLOSE_DELAY=-1",
++        "messages.directory=classpath:/messages", "token.secret=synthetic-advice-test-only",
++        "management.tracing.enabled=false", "spring.sql.init.mode=never"
++})
++class ReactiveErrorResponseTest {
++
++    @Autowired
++    private WebTestClient client;
++
++    @MockitoBean
++    private ReserveService reserveService;
++
++    @BeforeEach
++    void authenticate() throws Exception {
++        byte[] key = MessageDigest.getInstance("SHA-256")
++                .digest("synthetic-advice-test-only".getBytes(StandardCharsets.UTF_8));
++        String token = Jwts.builder().subject("advice-test-user").claim("authorities", "ROLE_USER")
++                .signWith(Keys.hmacShaKeyFor(key)).compact();
++        client = client.mutate().defaultHeader("Authorization", "Bearer " + token).build();
++    }
++
++    @Test
++    void missingReservationUsesDeclaredBusinessError() {
++        when(reserveService.create(any()))
++                .thenReturn(Mono.error(new EntityNotFoundException("missing-synthetic")));
++
++        client.post().uri("/api/v1/requests/evaluates").contentType(MediaType.APPLICATION_JSON)
++                .bodyValue("{}").exchange()
++                .expectStatus().isBadRequest().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
++                .expectBody().jsonPath("$.status").isEqualTo(400).jsonPath("$.code").isEqualTo("E003")
++                .jsonPath("$.timestamp").exists().jsonPath("$.errors").isEmpty();
++    }
++
++    @Test
++    void unexpectedFailureUsesCommonServerError() {
++        when(reserveService.create(any()))
++                .thenReturn(Mono.error(new IllegalStateException("synthetic failure")));
++
++        client.post().uri("/api/v1/requests/evaluates").contentType(MediaType.APPLICATION_JSON)
++                .bodyValue("{}").exchange()
++                .expectStatus().is5xxServerError().expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
++                .expectBody().jsonPath("$.status").isEqualTo(500).jsonPath("$.code").isEqualTo("E999")
++                .jsonPath("$.errors").isEmpty();
++    }
++
++    @Test
++    void healthRouteStillReturnsServiceInformation() {
++        client.get().uri("/actuator/health-info").exchange().expectStatus().isOk()
++                .expectBody(String.class).value(body -> org.assertj.core.api.Assertions.assertThat(body)
++                        .contains("Reserve Request Service"));
++    }
++}
