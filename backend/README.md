@@ -18,3 +18,16 @@
 
 ## 공통 개발/실행 방법
 각 서비스별 README를 참고하거나, 루트 README를 참고하세요.
+
+
+## 테스트 프로파일 로깅
+
+Logstash 설정이 있는 8개 모듈은 `default` 또는 `test` 프로파일에서 콘솔만 사용합니다.
+`test`와 다른 프로파일을 함께 활성화해도 TCP 전송 및 파일 appender는 생성하지 않습니다.
+그 외 프로파일에서는 기존 Logstash 전송 설정을 사용합니다.
+
+각 해당 모듈 디렉터리에서 `./gradlew test --tests '*LoggingProfileTest'`로
+실제 로깅 설정과 로컬 TCP 소켓을 사용하는 회귀 테스트를 실행할 수 있습니다.
+이 테스트는 `default`/`test`/`test,prod`에서 콘솔만 사용하고 연결하지 않는지,
+`prod`에서는 실제 TCP 연결을 유지하는지 확인합니다.
+이 검증은 외부 Logstash 서버나 전체 서비스 통합 테스트를 의미하지 않습니다.
